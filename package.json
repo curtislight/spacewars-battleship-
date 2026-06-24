@@ -1,0 +1,17 @@
+{
+    "name": "spacewars-battleship",
+    "type": "module",
+    "version": "1.0.0",
+    "description": "A Star Wars themed Battleship game for Computing 2: Applications.",
+    "main": "web-app/Battleship.js",
+    "scripts": {
+        "test": "mocha",
+        "docs": "jsdoc -c jsdoc.json"
+    },
+    "license": "ISC",
+    "devDependencies": {
+        "docdash": "^2.0.2",
+        "jsdoc": "^4.0.4",
+        "mocha": "^11.1.0"
+    }
+}
