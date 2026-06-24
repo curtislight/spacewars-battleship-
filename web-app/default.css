@@ -163,16 +163,7 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
 .cell.miss::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--cyan); opacity: 0.9; box-shadow: 0 0 6px var(--cyan); }
 
 /* ── ship image spanning footprint on own grid ── */
-.ship-span-img {
-    position: absolute;
-    object-fit: contain;
-    object-position: center;
-    opacity: 0.8;
-    pointer-events: none;
-    z-index: 2;
-    /* padding so ship doesn't hug the edges */
-    padding: 2px;
-}
+/* ship-span-img removed - using coloured cells instead */
 
 /* ── preview outline overlay (drawn as SVG over grid) ── */
 .preview-outline {
@@ -199,7 +190,7 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
 .ship-entry.sunk-ship   { opacity: 0.3; }
 
 .ship-entry-top { display: flex; align-items: center; gap: 8px; }
-.ship-img       { width: 64px; height: 40px; object-fit: contain; flex-shrink: 0; }
+.ship-img       { width: 80px; height: 50px; object-fit: contain; flex-shrink: 0; }
 .ship-name      { font-size: 0.72rem; color: var(--text); }
 .ship-entry.active-ship .ship-name { color: var(--accent); }
 .ship-entry.sunk-ship   .ship-name { text-decoration: line-through; color: var(--text-dim); }
@@ -374,3 +365,20 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
 
 /* battle title with avatar */
 #battle-title { display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+/* ── per-ship colours ── */
+.cell.ship-tie-fighter { background: #00cfff22; border-color: #00cfff88; }
+.cell.ship-tie-fighter.hit { background: #cc220088; }
+.cell.ship-tie-fighter.sunk { background: #88000088; }
+.cell.ship-jedi-starfighter { background: #ff444422; border-color: #ff444488; }
+.cell.ship-jedi-starfighter.hit { background: #cc220088; }
+.cell.ship-jedi-starfighter.sunk { background: #88000088; }
+.cell.ship-slave-i { background: #44ff8822; border-color: #44ff8888; }
+.cell.ship-slave-i.hit { background: #cc220088; }
+.cell.ship-slave-i.sunk { background: #88000088; }
+.cell.ship-x-wing { background: #ffaa0022; border-color: #ffaa0088; }
+.cell.ship-x-wing.hit { background: #cc220088; }
+.cell.ship-x-wing.sunk { background: #88000088; }
+.cell.ship-millennium-falcon { background: #cc44ff22; border-color: #cc44ff88; }
+.cell.ship-millennium-falcon.hit { background: #cc220088; }
+.cell.ship-millennium-falcon.sunk { background: #88000088; }
