@@ -16,29 +16,43 @@ const Battleship = Object.create(null);
 Battleship.GRID_SIZE = 10;
 
 /**
- * The four rotations of the T-shaped X-wing, as [row, col] offsets from origin.
+ * The four rotations of the T-shaped X-wing as [row, col] offsets.
  * @memberof Battleship
  * @constant {number[][][]}
  */
 Battleship.XWING_ROTATIONS = Object.freeze([
-    Object.freeze([[0, 0], [1, 0], [2, 0], [1, 1], [1, 2]]),
-    Object.freeze([[0, 0], [1, 0], [2, 0], [1, -1], [1, -2]]),
-    Object.freeze([[0, 0], [0, 1], [0, 2], [1, 1], [2, 1]]),
-    Object.freeze([[2, 0], [2, 1], [2, 2], [1, 1], [0, 1]])
+    Object.freeze([
+        [0, 0], [1, 0], [2, 0], [1, 1], [1, 2]
+    ]),
+    Object.freeze([
+        [0, 0], [1, 0], [2, 0], [1, -1], [1, -2]
+    ]),
+    Object.freeze([
+        [0, 0], [0, 1], [0, 2], [1, 1], [2, 1]
+    ]),
+    Object.freeze([
+        [2, 0], [2, 1], [2, 2], [1, 1], [0, 1]
+    ])
 ]);
 
 /**
- * The four rotations of the Millennium Falcon (2 tall × 3 wide block).
- * Rotation 0 and 2 are landscape (3 wide, 2 tall).
- * Rotation 1 and 3 are portrait (2 wide, 3 tall).
+ * The four rotations of the Millennium Falcon (2x3 block).
  * @memberof Battleship
  * @constant {number[][][]}
  */
 Battleship.FALCON_ROTATIONS = Object.freeze([
-    Object.freeze([[0,0],[0,1],[0,2],[1,0],[1,1],[1,2]]),
-    Object.freeze([[0,0],[0,1],[1,0],[1,1],[2,0],[2,1]]),
-    Object.freeze([[0,0],[0,1],[0,2],[1,0],[1,1],[1,2]]),
-    Object.freeze([[0,0],[0,1],[1,0],[1,1],[2,0],[2,1]])
+    Object.freeze([
+        [0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2]
+    ]),
+    Object.freeze([
+        [0, 0], [0, 1], [1, 0], [1, 1], [2, 0], [2, 1]
+    ]),
+    Object.freeze([
+        [0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2]
+    ]),
+    Object.freeze([
+        [0, 0], [0, 1], [1, 0], [1, 1], [2, 0], [2, 1]
+    ])
 ]);
 
 /**
@@ -47,11 +61,11 @@ Battleship.FALCON_ROTATIONS = Object.freeze([
  * @constant {Object[]}
  */
 Battleship.ships = Object.freeze([
-    Object.freeze({"name": "TIE Fighter", "size": 2, "shape": "line"}),
-    Object.freeze({"name": "Jedi Starfighter", "size": 2, "shape": "line"}),
-    Object.freeze({"name": "Slave I", "size": 3, "shape": "line"}),
-    Object.freeze({"name": "X-wing", "size": 5, "shape": "xwing"}),
-    Object.freeze({"name": "Millennium Falcon", "size": 6, "shape": "falcon"})
+    Object.freeze({"name": "TIE Fighter", "shape": "line", "size": 2}),
+    Object.freeze({"name": "Jedi Starfighter", "shape": "line", "size": 2}),
+    Object.freeze({"name": "Slave I", "shape": "line", "size": 3}),
+    Object.freeze({"name": "X-wing", "shape": "xwing", "size": 5}),
+    Object.freeze({"name": "Millennium Falcon", "shape": "falcon", "size": 6})
 ]);
 
 /**
@@ -62,13 +76,13 @@ Battleship.ships = Object.freeze([
  */
 
 /**
- * A placed ship on a board.
+ * A ship that has been placed on a board.
  * @memberof Battleship
  * @typedef {Object} PlacedShip
- * @property {string} name The ship name.
- * @property {number} size How many cells occupied.
- * @property {string} shape "line", "xwing", or "falcon".
  * @property {Battleship.Coordinate[]} cells The cells occupied.
+ * @property {string} name The ship name.
+ * @property {string} shape "line", "xwing", or "falcon".
+ * @property {number} size How many cells occupied.
  */
 
 /**
@@ -96,7 +110,9 @@ Battleship.empty_board = function () {
  * @returns {number[]} The range.
  */
 const range = function (n) {
-    return Array.from({"length": n}, function (ignore, i) { return i; });
+    return Array.from({"length": n}, function (ignore, i) {
+        return i;
+    });
 };
 
 /**
@@ -111,9 +127,11 @@ const range = function (n) {
  */
 Battleship.ship_cells = function (row, col, size, orientation) {
     return range(size).map(function (offset) {
-        return orientation === "horizontal"
+        return (
+            orientation === "horizontal"
             ? [row, col + offset]
-            : [row + offset, col];
+            : [row + offset, col]
+        );
     });
 };
 
@@ -123,7 +141,7 @@ Battleship.ship_cells = function (row, col, size, orientation) {
  * @function
  * @param {number} row Origin row.
  * @param {number} col Origin column.
- * @param {number} rotation Index 0–3 into XWING_ROTATIONS.
+ * @param {number} rotation Index 0-3 into XWING_ROTATIONS.
  * @returns {Battleship.Coordinate[]} The five cells.
  */
 Battleship.xwing_cells = function (row, col, rotation) {
@@ -133,12 +151,12 @@ Battleship.xwing_cells = function (row, col, rotation) {
 };
 
 /**
- * Compute cells for the Millennium Falcon (2×3 block).
+ * Compute cells for the Millennium Falcon (2x3 block).
  * @memberof Battleship
  * @function
  * @param {number} row Origin row.
  * @param {number} col Origin column.
- * @param {number} rotation Index 0–3 into FALCON_ROTATIONS.
+ * @param {number} rotation Index 0-3 into FALCON_ROTATIONS.
  * @returns {Battleship.Coordinate[]} The six cells.
  */
 Battleship.falcon_cells = function (row, col, rotation) {
@@ -148,7 +166,7 @@ Battleship.falcon_cells = function (row, col, rotation) {
 };
 
 /**
- * Returns true if a coordinate is inside the 10×10 grid.
+ * Returns true if a coordinate is inside the 10x10 grid.
  * @memberof Battleship
  * @function
  * @param {Battleship.Coordinate} coord The coordinate to check.
@@ -156,18 +174,18 @@ Battleship.falcon_cells = function (row, col, rotation) {
  */
 Battleship.is_on_board = function (coord) {
     return (
-        coord[0] >= 0 &&
-        coord[0] < Battleship.GRID_SIZE &&
-        coord[1] >= 0 &&
-        coord[1] < Battleship.GRID_SIZE
+        coord[0] >= 0
+        && coord[0] < Battleship.GRID_SIZE
+        && coord[1] >= 0
+        && coord[1] < Battleship.GRID_SIZE
     );
 };
 
 /**
  * Returns true if two coordinates are equal.
  * @function
- * @param {Battleship.Coordinate} a First.
- * @param {Battleship.Coordinate} b Second.
+ * @param {Battleship.Coordinate} a First coordinate.
+ * @param {Battleship.Coordinate} b Second coordinate.
  * @returns {boolean} Whether equal.
  */
 const coords_equal = function (a, b) {
@@ -182,11 +200,14 @@ const coords_equal = function (a, b) {
  * @returns {Battleship.Coordinate[]} Every occupied cell.
  */
 Battleship.occupied_cells = function (board) {
-    return board.fleet.flatMap(function (ship) { return ship.cells; });
+    return board.fleet.flatMap(function (ship) {
+        return ship.cells;
+    });
 };
 
 /**
  * Returns whether a proposed set of cells is legal to place.
+ * Legal means all cells are on the board and none overlap existing ships.
  * @memberof Battleship
  * @function
  * @param {Battleship.Coordinate[]} cells Cells to check.
@@ -211,18 +232,23 @@ Battleship.can_place = function (cells, board) {
  * @memberof Battleship
  * @function
  * @param {string} name Ship name.
- * @param {number} size Ship size.
  * @param {string} shape Ship shape.
+ * @param {number} size Ship size.
  * @param {Battleship.Coordinate[]} cells Cells to place on.
  * @param {Battleship.Board} board Board to place into.
  * @returns {Battleship.Board|undefined} New board or undefined.
  */
-Battleship.place_ship = function (name, size, shape, cells, board) {
+Battleship.place_ship = function (name, shape, size, cells, board) {
     if (!Battleship.can_place(cells, board)) {
         return undefined;
     }
     return {
-        "fleet": [...board.fleet, {"name": name, "size": size, "shape": shape, "cells": cells}],
+        "fleet": [...board.fleet, {
+            "cells": cells,
+            "name": name,
+            "shape": shape,
+            "size": size
+        }],
         "shots": board.shots
     };
 };
@@ -255,12 +281,20 @@ Battleship.random_board = function () {
             } else if (ship.shape === "falcon") {
                 cells = Battleship.falcon_cells(row, col, random_int(4));
             } else {
-                cells = Battleship.ship_cells(
-                    row, col, ship.size,
-                    random_int(2) === 0 ? "horizontal" : "vertical"
+                const orientation = (
+                    random_int(2) === 0
+                    ? "horizontal"
+                    : "vertical"
                 );
+                cells = Battleship.ship_cells(row, col, ship.size, orientation);
             }
-            placed = Battleship.place_ship(ship.name, ship.size, ship.shape, cells, board);
+            placed = Battleship.place_ship(
+                ship.name,
+                ship.shape,
+                ship.size,
+                cells,
+                board
+            );
         }
         return placed;
     }, Battleship.empty_board());
@@ -275,7 +309,9 @@ Battleship.random_board = function () {
  * @returns {boolean} Whether already shot.
  */
 Battleship.already_shot = function (coord, board) {
-    return board.shots.some(function (shot) { return coords_equal(shot, coord); });
+    return board.shots.some(function (shot) {
+        return coords_equal(shot, coord);
+    });
 };
 
 /**
@@ -307,7 +343,8 @@ Battleship.is_sunk = function (ship, board) {
 };
 
 /**
- * Fire a shot. Returns new board or undefined if illegal.
+ * Fire a shot at a coordinate.
+ * Returns a new board or undefined if the shot is illegal.
  * The original board is never modified.
  * @memberof Battleship
  * @function
