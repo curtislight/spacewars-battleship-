@@ -102,6 +102,23 @@ button:disabled { border-color: var(--text-dim); color: var(--text-dim); cursor:
 button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box-shadow: none; }
 .btn-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
 #btn-rotate { font-size: 1.3rem; padding: 6px 16px; letter-spacing: 0; }
+#btn-fire {
+    background: rgba(180,0,0,0.6);
+    border-color: #ff4422;
+    color: #fff;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    animation: pulse-fire 1.2s ease infinite;
+}
+#btn-fire:hover, #btn-fire:focus {
+    background: #cc2200;
+    color: #fff;
+    box-shadow: 0 0 16px rgba(255,0,0,0.6);
+}
+@keyframes pulse-fire {
+    0%, 100% { box-shadow: 0 0 6px rgba(255,60,0,0.4); }
+    50%       { box-shadow: 0 0 16px rgba(255,60,0,0.8); }
+}
 
 /* ── grid ── */
 .grid-outer { display: inline-flex; flex-direction: column; }
@@ -149,9 +166,12 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
 .ship-span-img {
     position: absolute;
     object-fit: contain;
-    opacity: 0.65;
+    object-position: center;
+    opacity: 0.8;
     pointer-events: none;
     z-index: 2;
+    /* padding so ship doesn't hug the edges */
+    padding: 2px;
 }
 
 /* ── preview outline overlay (drawn as SVG over grid) ── */
@@ -165,7 +185,7 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
 .grid-title { font-size: 0.68rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; text-align: center; text-shadow: 0 0 10px rgba(255,232,26,0.3); }
 
 /* ── fleet sidebar ── */
-.fleet-sidebar { display: flex; flex-direction: column; gap: 6px; width: 210px; flex-shrink: 0; }
+.fleet-sidebar { display: flex; flex-direction: column; gap: 6px; width: 220px; flex-shrink: 0; }
 .ship-entry {
     background: rgba(7,17,31,0.88); border: 1px solid var(--border);
     padding: 7px 8px; cursor: pointer;
@@ -179,7 +199,7 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
 .ship-entry.sunk-ship   { opacity: 0.3; }
 
 .ship-entry-top { display: flex; align-items: center; gap: 8px; }
-.ship-img       { width: 52px; height: 32px; object-fit: contain; flex-shrink: 0; }
+.ship-img       { width: 64px; height: 40px; object-fit: contain; flex-shrink: 0; }
 .ship-name      { font-size: 0.72rem; color: var(--text); }
 .ship-entry.active-ship .ship-name { color: var(--accent); }
 .ship-entry.sunk-ship   .ship-name { text-decoration: line-through; color: var(--text-dim); }
@@ -192,7 +212,23 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
 .fp-cell.fp-sunk { background: #880000; }
 
 /* ── placement layout ── */
-.placement-layout { display: flex; gap: 32px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
+.placement-layout { display: flex; justify-content: center; }
+.placement-sidebar-and-grid {
+    display: flex;
+    gap: 28px;
+    align-items: flex-start;
+}
+.placement-grid-col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+}
+/* sidebar height matches grid height dynamically */
+#placement-fleet-sidebar {
+    align-self: stretch;
+    justify-content: space-between;
+}
 .placement-controls { display: flex; flex-direction: column; gap: 10px; align-items: center; }
 
 .status-bar {
