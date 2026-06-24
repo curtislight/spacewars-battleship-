@@ -11,17 +11,21 @@
 
 <main tabindex="-1">
 
-    <!-- Screen 1: Names -->
+    <!-- Screen 1: Names + Avatars -->
     <section class="screen active" id="name-screen" aria-label="Player name entry">
-        <h2>Enter Player Names</h2>
+        <h2>Choose Your Commander</h2>
         <div class="player-name-row">
             <div class="name-field">
-                <label for="name-p1">Player 1</label>
+                <label for="name-p1">Player 1 Name</label>
                 <input id="name-p1" type="text" value="Player 1" maxlength="20">
+                <div class="avatar-label">Choose Avatar</div>
+                <div class="avatar-row" id="avatar-row-p1" role="group" aria-label="Player 1 avatar"></div>
             </div>
             <div class="name-field">
-                <label for="name-p2">Player 2</label>
+                <label for="name-p2">Player 2 Name</label>
                 <input id="name-p2" type="text" value="Player 2" maxlength="20">
+                <div class="avatar-label">Choose Avatar</div>
+                <div class="avatar-row" id="avatar-row-p2" role="group" aria-label="Player 2 avatar"></div>
             </div>
         </div>
         <div class="btn-row">
@@ -71,14 +75,10 @@
         <h2 id="battle-title">Battle Phase</h2>
         <div id="shot-result" aria-live="assertive"></div>
         <div class="battle-layout">
-
-            <!-- Left: enemy fleet -->
             <div class="fleet-sidebar">
                 <h3 id="enemy-fleet-label">Enemy Fleet</h3>
                 <ul id="enemy-fleet-list" style="list-style:none;display:flex;flex-direction:column;gap:6px" aria-label="Enemy fleet status"></ul>
             </div>
-
-            <!-- Centre: enemy grid -->
             <div>
                 <div class="grid-title" id="enemy-grid-title">Enemy Waters</div>
                 <div class="grid-outer">
@@ -92,8 +92,6 @@
                     <button id="btn-continue-turn" style="display:none">Continue →</button>
                 </div>
             </div>
-
-            <!-- Right: own grid -->
             <div>
                 <div class="grid-title" id="own-grid-title">Your Waters</div>
                 <div class="grid-outer">
@@ -104,13 +102,10 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Far right: event log -->
             <div class="event-log" aria-label="Game event log" aria-live="polite">
                 <h3>Battle Log</h3>
                 <div id="log-entries"></div>
             </div>
-
         </div>
     </section>
 
