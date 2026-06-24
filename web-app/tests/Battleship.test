@@ -79,7 +79,7 @@ Then the resulting board is valid and contains that ship.`,
         function () {
             const board = Battleship.empty_board();
             const cells = Battleship.ship_cells(0, 0, 3, "horizontal");
-            const next = Battleship.place_ship("Slave I", 3, "line", cells, board);
+            const next = Battleship.place_ship("Slave I", "line", 3, cells, board);
             throw_if_invalid(next);
             if (next.fleet.length !== 1) {
                 throw new Error("Board should contain exactly one ship.");
@@ -95,11 +95,11 @@ Then place_ship returns undefined.`,
             const board = Battleship.empty_board();
             const cells = Battleship.ship_cells(0, 0, 3, "horizontal");
             const with_ship = Battleship.place_ship(
-                "Slave I", 3, "line", cells, board
+                "Slave I", "line", 3, cells, board
             );
             const overlap = Battleship.ship_cells(0, 1, 2, "horizontal");
             const result = Battleship.place_ship(
-                "TIE Fighter", 2, "line", overlap, with_ship
+                "TIE Fighter", "line", 2, overlap, with_ship
             );
             if (result !== undefined) {
                 throw new Error("Overlapping placement should return undefined.");
@@ -153,7 +153,7 @@ Then it is unchanged (pure function).`,
         function () {
             const board = Battleship.empty_board();
             const cells = Battleship.ship_cells(0, 0, 3, "horizontal");
-            Battleship.place_ship("Slave I", 3, "line", cells, board);
+            Battleship.place_ship("Slave I", "line", 3, cells, board);
             if (board.fleet.length !== 0) {
                 throw new Error("place_ship must not mutate the original board.");
             }
@@ -183,9 +183,7 @@ Then the board is valid.`,
         function () {
             const board = Battleship.empty_board();
             const cells = Battleship.xwing_cells(2, 2, 0);
-            const next = Battleship.place_ship(
-                "X-wing", 5, "xwing", cells, board
-            );
+            const next = Battleship.place_ship("X-wing", "xwing", 5, cells, board);
             throw_if_invalid(next);
         }
     );
@@ -212,9 +210,7 @@ Then all four are valid placements.`,
             [0, 1, 2, 3].forEach(function (rotation) {
                 const board = Battleship.empty_board();
                 const cells = Battleship.xwing_cells(4, 4, rotation);
-                const next = Battleship.place_ship(
-                    "X-wing", 5, "xwing", cells, board
-                );
+                const next = Battleship.place_ship("X-wing", "xwing", 5, cells, board);
                 if (next === undefined) {
                     throw new Error(
                         "Rotation " + rotation + " at [4,4] should be valid."
@@ -262,7 +258,7 @@ Then is_hit returns true.`,
             const board = Battleship.empty_board();
             const cells = Battleship.ship_cells(0, 0, 2, "horizontal");
             const with_ship = Battleship.place_ship(
-                "TIE Fighter", 2, "line", cells, board
+                "TIE Fighter", "line", 2, cells, board
             );
             if (!Battleship.is_hit([0, 0], with_ship)) {
                 throw new Error("Shot at [0,0] should be a hit.");
@@ -278,7 +274,7 @@ Then is_hit returns false.`,
             const board = Battleship.empty_board();
             const cells = Battleship.ship_cells(0, 0, 2, "horizontal");
             const with_ship = Battleship.place_ship(
-                "TIE Fighter", 2, "line", cells, board
+                "TIE Fighter", "line", 2, cells, board
             );
             if (Battleship.is_hit([5, 5], with_ship)) {
                 throw new Error("Shot at [5,5] should be a miss.");
@@ -336,7 +332,7 @@ Then is_sunk returns true.`,
         function () {
             let board = Battleship.empty_board();
             const cells = Battleship.ship_cells(0, 0, 2, "horizontal");
-            board = Battleship.place_ship("TIE Fighter", 2, "line", cells, board);
+            board = Battleship.place_ship("TIE Fighter", "line", 2, cells, board);
             board = Battleship.fire([0, 0], board);
             board = Battleship.fire([0, 1], board);
             if (!Battleship.is_sunk(board.fleet[0], board)) {
@@ -352,7 +348,7 @@ Then is_sunk returns false.`,
         function () {
             let board = Battleship.empty_board();
             const cells = Battleship.ship_cells(0, 0, 2, "horizontal");
-            board = Battleship.place_ship("TIE Fighter", 2, "line", cells, board);
+            board = Battleship.place_ship("TIE Fighter", "line", 2, cells, board);
             board = Battleship.fire([0, 0], board);
             if (Battleship.is_sunk(board.fleet[0], board)) {
                 throw new Error("TIE Fighter should not be sunk with one cell hit.");
@@ -366,7 +362,7 @@ Then is_defeated returns true.`,
         function () {
             let board = Battleship.empty_board();
             const cells = Battleship.ship_cells(0, 0, 2, "horizontal");
-            board = Battleship.place_ship("TIE Fighter", 2, "line", cells, board);
+            board = Battleship.place_ship("TIE Fighter", "line", 2, cells, board);
             board = Battleship.fire([0, 0], board);
             board = Battleship.fire([0, 1], board);
             if (!Battleship.is_defeated(board)) {
@@ -381,7 +377,7 @@ Then is_defeated returns false.`,
         function () {
             let board = Battleship.empty_board();
             const cells = Battleship.ship_cells(0, 0, 2, "horizontal");
-            board = Battleship.place_ship("TIE Fighter", 2, "line", cells, board);
+            board = Battleship.place_ship("TIE Fighter", "line", 2, cells, board);
             board = Battleship.fire([0, 0], board);
             if (Battleship.is_defeated(board)) {
                 throw new Error("Board should not be defeated with ships still afloat.");
