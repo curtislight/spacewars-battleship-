@@ -5,7 +5,7 @@ import Images from "./images.js";
 // ── constants ────────────────────────────────────────────────────────────────
 const ROW_LABELS = ["A","B","C","D","E","F","G","H","I","J"];
 const COL_LABELS = ["1","2","3","4","5","6","7","8","9","10"];
-const CELL_SIZE  = 38; // must match --cell-size in CSS
+const CELL_SIZE  = 44; // must match --cell-size in CSS
 
 const SHIP_IMAGES = {
     "TIE Fighter":       Images.tie_fighter,
@@ -15,35 +15,74 @@ const SHIP_IMAGES = {
     "Millennium Falcon": Images.millennium_falcon
 };
 
-// Footprint info: bounding box dimensions and which cells are filled (as [row,col] offsets)
+// Rotation angle (degrees) to apply to ship image on own grid
+// line ships: 0 = horizontal, 90 = vertical
+// xwing rotations 0,1 are vertical-stem, 2,3 are horizontal-stem
+// falcon rotations 0,2 are landscape, 1,3 are portrait
+const get_ship_rotation = function (ship) {
+    if (ship.shape === "line") {
+        const rows = ship.cells.map((c) => c[0]);
+        const cols = ship.cells.map((c) => c[1]);
+        return Math.max(...rows) > Math.min(...rows) ? 90 : 0;
+    }
+    if (ship.shape === "xwing") {
+        // rotation 0,1: stem is vertical; 2,3: stem is horizontal
+        const row_span = Math.max(...ship.cells.map((c) => c[0])) - Math.min(...ship.cells.map((c) => c[0]));
+        return row_span >= 2 ? 0 : 90;
+    }
+    if (ship.shape === "falcon") {
+        const col_span = Math.max(...ship.cells.map((c) => c[1])) - Math.min(...ship.cells.map((c) => c[1]));
+        return col_span >= 2 ? 0 : 90;
+    }
+    return 0;
+};
+
+// Footprint info for sidebar
 const FOOTPRINT = {
     "TIE Fighter":       {cols:2, rows:1, offsets:[[0,0],[0,1]]},
     "Jedi Starfighter":  {cols:2, rows:1, offsets:[[0,0],[0,1]]},
     "Slave I":           {cols:3, rows:1, offsets:[[0,0],[0,1],[0,2]]},
-    "X-wing":            {cols:3, rows:3, offsets: Battleship.XWING_ROTATIONS[0].map((o) => [o[0],o[1]])},
-    "Millennium Falcon": {cols:3, rows:2, offsets: Battleship.FALCON_ROTATIONS[0].map((o) => [o[0],o[1]])}
+    "X-wing":            {cols:3, rows:3, offsets:[[0,0],[1,0],[2,0],[1,1],[1,2]]},
+    "Millennium Falcon": {cols:3, rows:2, offsets:[[0,0],[0,1],[0,2],[1,0],[1,1],[1,2]]}
 };
 
 // ── state ────────────────────────────────────────────────────────────────────
-let player_names      = ["Player 1", "Player 2"];
-let boards            = [Battleship.empty_board(), Battleship.empty_board()];
-let placement_player  = 0;
-let placement_board   = Battleship.empty_board();
-let selected_idx      = null;
-let orientation       = "horizontal";
-let xwing_rotation    = 0;
-let falcon_rotation   = 0;
-let active_player     = 0;
-let waiting           = false;
+let player_names     = ["Player 1", "Player 2"];
+let boards           = [Battleship.empty_board(), Battleship.empty_board()];
+let placement_player = 0;
+let placement_board  = Battleship.empty_board();
+let selected_idx     = null;
+let orientation      = "horizontal";
+let xwing_rotation   = 0;
+let falcon_rotation  = 0;
+let active_player    = 0;
+let waiting          = false;
+let log_entries      = [];
 
 // ── helpers ──────────────────────────────────────────────────────────────────
-const el    = (id) => document.getElementById(id);
-const placed_names = () => placement_board.fleet.map((s) => s.name);
-const unplaced     = () => Battleship.ships.filter((s) => !placed_names().includes(s.name));
+const el           = (id) => document.getElementById(id);
+const placed_names = ()   => placement_board.fleet.map((s) => s.name);
+const unplaced     = ()   => Battleship.ships.filter((s) => !placed_names().includes(s.name));
 
 const show_screen = function (id) {
     document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
     el(id).classList.add("active");
+};
+
+// ── event log ─────────────────────────────────────────────────────────────────
+const add_log = function (text, type) {
+    log_entries.push({text, type});
+    const entry = document.createElement("div");
+    entry.className = "log-entry log-" + type;
+    entry.textContent = text;
+    const container = el("log-entries");
+    container.appendChild(entry);
+    container.scrollTop = container.scrollHeight;
+};
+
+const clear_log = function () {
+    log_entries = [];
+    el("log-entries").innerHTML = "";
 };
 
 // ── grid builders ─────────────────────────────────────────────────────────────
@@ -92,9 +131,9 @@ const get_cell = (grid_el, row, col) =>
 
 // ── footprint sidebar widget ──────────────────────────────────────────────────
 const make_footprint = function (ship_def, placed_ship, board) {
-    const fp = FOOTPRINT[ship_def.name];
+    const fp     = FOOTPRINT[ship_def.name];
     const filled = new Set(fp.offsets.map(([r, c]) => `${r},${c}`));
-    const wrap = document.createElement("div");
+    const wrap   = document.createElement("div");
     wrap.className = "footprint";
     wrap.style.gridTemplateColumns = `repeat(${fp.cols}, 10px)`;
     wrap.style.gridTemplateRows    = `repeat(${fp.rows}, 10px)`;
@@ -105,12 +144,11 @@ const make_footprint = function (ship_def, placed_ship, board) {
             fc.className = "fp-cell";
             if (filled.has(`${r},${c}`)) {
                 fc.classList.add("fp-ship");
-                // colour by hit status when in battle
                 if (placed_ship && board) {
-                    const cell_idx = fp.offsets.findIndex(([or, oc]) => or === r && oc === c);
-                    if (cell_idx >= 0) {
-                        const actual = placed_ship.cells[cell_idx];
-                        if (actual && Battleship.already_shot(actual, board)) {
+                    const idx = fp.offsets.findIndex(([or, oc]) => or === r && oc === c);
+                    if (idx >= 0 && placed_ship.cells[idx]) {
+                        const actual = placed_ship.cells[idx];
+                        if (Battleship.already_shot(actual, board)) {
                             fc.classList.remove("fp-ship");
                             fc.classList.add(
                                 Battleship.is_sunk(placed_ship, board) ? "fp-sunk" : "fp-hit"
@@ -125,15 +163,13 @@ const make_footprint = function (ship_def, placed_ship, board) {
     return wrap;
 };
 
-// ── ship images spanning the footprint on the own grid ────────────────────────
-// After painting the own grid, overlay one <img> per ship covering its bounding box.
+// ── ship images spanning footprint on own grid ────────────────────────────────
 const overlay_ship_images = function (grid_el, board) {
-    // remove existing overlays
     grid_el.querySelectorAll(".ship-span-img").forEach((n) => n.remove());
 
     board.fleet.forEach(function (ship) {
-        const rows = ship.cells.map((c) => c[0]);
-        const cols = ship.cells.map((c) => c[1]);
+        const rows    = ship.cells.map((c) => c[0]);
+        const cols    = ship.cells.map((c) => c[1]);
         const min_row = Math.min(...rows);
         const min_col = Math.min(...cols);
         const max_row = Math.max(...rows);
@@ -142,30 +178,78 @@ const overlay_ship_images = function (grid_el, board) {
         const span_rows = max_row - min_row + 1;
         const span_cols = max_col - min_col + 1;
 
-        // anchor image to the top-left cell of the ship's bounding box
-        const anchor = get_cell(grid_el, min_row, min_col);
-        if (!anchor) { return; }
+        const anchor      = get_cell(grid_el, min_row, min_col);
+        const grid_rect   = grid_el.getBoundingClientRect();
+        const anchor_rect = anchor.getBoundingClientRect();
+
+        const left = anchor_rect.left - grid_rect.left;
+        const top  = anchor_rect.top  - grid_rect.top;
 
         const img = document.createElement("img");
         img.className = "ship-span-img";
         img.src = SHIP_IMAGES[ship.name] || "";
         img.alt = ship.name;
 
-        // position relative to the grid element
-        const grid_rect  = grid_el.getBoundingClientRect();
-        const anchor_rect = anchor.getBoundingClientRect();
-        const left = anchor_rect.left - grid_rect.left;
-        const top  = anchor_rect.top  - grid_rect.top;
+        const rot = get_ship_rotation(ship);
+        // for vertical ships, the bounding box is tall×narrow; we size the image
+        // to the longer dimension and rotate it so the nose points the right way
+        if (rot !== 0) {
+            const size = Math.max(span_rows, span_cols) * CELL_SIZE;
+            const small = Math.min(span_rows, span_cols) * CELL_SIZE;
+            img.style.width  = size + "px";
+            img.style.height = small + "px";
+            img.style.transformOrigin = "top left";
+            img.style.transform  = `rotate(${rot}deg) translateX(-${small}px)`;
+            img.style.left = (left + small) + "px";
+            img.style.top  = top + "px";
+        } else {
+            img.style.width  = (span_cols * CELL_SIZE) + "px";
+            img.style.height = (span_rows * CELL_SIZE) + "px";
+            img.style.left   = left + "px";
+            img.style.top    = top  + "px";
+        }
 
-        img.style.left   = left + "px";
-        img.style.top    = top  + "px";
-        img.style.width  = (span_cols * CELL_SIZE) + "px";
-        img.style.height = (span_rows * CELL_SIZE) + "px";
-
-        // make grid_el the positioning parent
-        grid_el.style.position = "relative";
         grid_el.appendChild(img);
     });
+};
+
+// ── preview outline (single clean border around all preview cells) ────────────
+const draw_preview_outline = function (grid_el, cells, valid) {
+    grid_el.querySelectorAll(".preview-outline").forEach((n) => n.remove());
+    grid_el.querySelectorAll(".preview,.preview-invalid").forEach((c) => {
+        c.classList.remove("preview", "preview-invalid");
+    });
+    if (!cells || cells.length === 0) { return; }
+
+    // colour each cell
+    const cls = valid ? "preview" : "preview-invalid";
+    cells.forEach(function (c) {
+        const t = get_cell(grid_el, c[0], c[1]);
+        if (t) { t.classList.add(cls); }
+    });
+
+    // draw one SVG outline around the bounding box of all preview cells
+    const rows    = cells.map((c) => c[0]);
+    const cols_   = cells.map((c) => c[1]);
+    const min_row = Math.min(...rows);
+    const min_col = Math.min(...cols_);
+    const max_row = Math.max(...rows);
+    const max_col = Math.max(...cols_);
+
+    const x = min_col * CELL_SIZE;
+    const y = min_row * CELL_SIZE;
+    const w = (max_col - min_col + 1) * CELL_SIZE;
+    const h = (max_row - min_row + 1) * CELL_SIZE;
+
+    const colour = valid ? "#00d4ff" : "#cc2200";
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("class", "preview-outline");
+    svg.style.left   = x + "px";
+    svg.style.top    = y + "px";
+    svg.style.width  = w + "px";
+    svg.style.height = h + "px";
+    svg.innerHTML = `<rect x="1" y="1" width="${w-2}" height="${h-2}" fill="none" stroke="${colour}" stroke-width="2" stroke-dasharray="6,3"/>`;
+    grid_el.appendChild(svg);
 };
 
 // ── placement ─────────────────────────────────────────────────────────────────
@@ -179,20 +263,13 @@ const compute_placement_cells = function (row, col) {
 };
 
 const clear_preview = function () {
-    el("placement-grid").querySelectorAll(".preview,.preview-invalid").forEach(function (c) {
-        c.classList.remove("preview", "preview-invalid");
-    });
+    draw_preview_outline(el("placement-grid"), [], true);
 };
 
 const on_placement_hover = function (row, col) {
-    clear_preview();
     const cells = compute_placement_cells(row, col);
     if (!cells) { return; }
-    const valid = Battleship.can_place(cells, placement_board);
-    cells.forEach(function (c) {
-        const t = get_cell(el("placement-grid"), c[0], c[1]);
-        if (t) { t.classList.add(valid ? "preview" : "preview-invalid"); }
-    });
+    draw_preview_outline(el("placement-grid"), cells, Battleship.can_place(cells, placement_board));
 };
 
 const on_placement_click = function (row, col) {
@@ -208,7 +285,7 @@ const on_placement_click = function (row, col) {
         return;
     }
     placement_board = next;
-    selected_idx = null;
+    selected_idx    = null;
     refresh_placement();
 };
 
@@ -217,7 +294,6 @@ const refresh_placement_grid = function () {
     el("placement-grid").querySelectorAll(".cell").forEach(function (cell) {
         const row = parseInt(cell.dataset.row, 10);
         const col = parseInt(cell.dataset.col, 10);
-        // plain ship colour only — no image overlays during placement
         cell.className = "cell" + (
             occupied.some((c) => c[0] === row && c[1] === col) ? " ship" : ""
         );
@@ -226,11 +302,11 @@ const refresh_placement_grid = function () {
 
 const refresh_ship_list = function (list_el, for_placement, battle_board) {
     list_el.innerHTML = "";
-    const placed = placed_names();
+    const placed    = placed_names();
     const remaining = unplaced();
 
     Battleship.ships.forEach(function (ship_def) {
-        const is_placed = placed.includes(ship_def.name);
+        const is_placed   = placed.includes(ship_def.name);
         const placed_ship = battle_board
             ? battle_board.fleet.find((s) => s.name === ship_def.name)
             : null;
@@ -272,7 +348,6 @@ const refresh_ship_list = function (list_el, for_placement, battle_board) {
                 if (selected_idx === rem_idx) { entry.classList.add("active-ship"); }
             }
         } else {
-            // battle mode: mark sunk ships
             if (placed_ship && Battleship.is_sunk(placed_ship, battle_board)) {
                 entry.classList.add("sunk-ship");
                 name_el.textContent += " – SUNK";
@@ -376,8 +451,6 @@ const paint_own_grid = function () {
         }
     });
 
-    // overlay one image per ship spanning its full footprint
-    // use requestAnimationFrame so DOM has laid out before we read getBoundingClientRect
     requestAnimationFrame(function () {
         overlay_ship_images(grid, board);
     });
@@ -418,7 +491,7 @@ el("btn-rotate").addEventListener("click", function () {
 
 el("btn-randomise").addEventListener("click", function () {
     placement_board = Battleship.random_board();
-    selected_idx = null;
+    selected_idx    = null;
     refresh_placement();
 });
 
@@ -476,10 +549,10 @@ const start_placement = function () {
 };
 
 const start_battle = function () {
+    clear_log();
     build_labels(el("enemy-col-labels"), el("enemy-row-labels"));
     build_labels(el("own-col-labels"),   el("own-row-labels"));
 
-    // build enemy grid with click handler
     build_grid(el("enemy-grid"), function (row, col) {
         if (waiting) { return; }
 
@@ -488,21 +561,27 @@ const start_battle = function () {
         if (next_board === undefined) { return; }
         boards[defender] = next_board;
 
-        const hit  = Battleship.is_hit([row, col], boards[defender]);
-        const ship = hit
+        const coord = [row, col];
+        const hit   = Battleship.is_hit(coord, boards[defender]);
+        const ship  = hit
             ? boards[defender].fleet.find((s) => s.cells.some((c) => c[0] === row && c[1] === col))
             : null;
-        const sunk = ship && Battleship.is_sunk(ship, boards[defender]);
+        const sunk  = ship && Battleship.is_sunk(ship, boards[defender]);
+
+        const pos = ROW_LABELS[row] + COL_LABELS[col];
 
         if (sunk) {
             el("shot-result").style.color   = "#cc2200";
             el("shot-result").textContent   = `${ship.name} DESTROYED`;
+            add_log(`${player_names[active_player]} → ${pos}: ${ship.name} DESTROYED`, "sunk");
         } else if (hit) {
             el("shot-result").style.color   = "#FFE81A";
             el("shot-result").textContent   = "HIT";
+            add_log(`${player_names[active_player]} → ${pos}: HIT`, "hit");
         } else {
             el("shot-result").style.color   = "#00d4ff";
             el("shot-result").textContent   = "MISS";
+            add_log(`${player_names[active_player]} → ${pos}: miss`, "miss");
         }
 
         waiting = true;
@@ -513,7 +592,6 @@ const start_battle = function () {
         el("btn-continue-turn").style.display = "inline-block";
     }, null, null);
 
-    // own grid: no click handler, all cells disabled
     build_grid(el("own-grid"), null, null, null);
     el("own-grid").querySelectorAll(".cell").forEach((c) => { c.disabled = true; });
 
