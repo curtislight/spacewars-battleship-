@@ -1,17 +1,17 @@
 <!doctype html>
 <html lang="en-gb">
 <meta charset="utf-8">
-<title>Spacewars Battleship</title>
+<title>Space Wars Battleship</title>
 <link rel="stylesheet" href="default.css">
 <script type="module" src="main.js"></script>
 
 <header>
-    <h1>⚔ Spacewars Battleship</h1>
+    <img id="logo" src="" alt="Space Wars Battleship logo">
 </header>
 
 <main tabindex="-1">
 
-    <!-- Screen 1: Name entry -->
+    <!-- Screen 1: Names -->
     <section class="screen active" id="name-screen" aria-label="Player name entry">
         <h2>Enter Player Names</h2>
         <div class="player-name-row">
@@ -25,55 +25,89 @@
             </div>
         </div>
         <div class="btn-row">
-            <button id="btn-start-placement" aria-label="Start game">Start Game</button>
+            <button id="btn-start-placement">Start Game</button>
         </div>
     </section>
 
-    <!-- Screen 2: Ship placement -->
+    <!-- Screen 2: Placement -->
     <section class="screen" id="placement-screen" aria-label="Ship placement">
         <h2 id="placement-title">Place Your Fleet</h2>
-        <div class="status-bar" id="placement-status">Select a ship, then click the grid to place it.</div>
         <div class="placement-layout">
-            <div class="placement-sidebar">
-                <p style="color:var(--text-dim);font-size:0.85rem">Your ships</p>
-                <ul class="ship-list" id="ship-list" aria-label="Ships to place"></ul>
-                <div class="orientation-indicator" id="orientation-label" aria-live="polite">
-                    Orientation: Horizontal →
-                </div>
+
+            <div class="fleet-sidebar">
+                <h3>Your Ships</h3>
+                <ul id="ship-list" style="list-style:none;display:flex;flex-direction:column;gap:8px" aria-label="Ships to place"></ul>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:12px;align-items:center">
+                <div class="status-bar" id="placement-status">Select a ship then click the grid.</div>
+                <div class="orientation-label" id="orientation-label" aria-live="polite">Orientation: Horizontal →</div>
                 <div class="btn-row">
-                    <button id="btn-rotate" aria-label="Rotate selected ship">Rotate</button>
-                    <button id="btn-randomise" aria-label="Place all ships randomly">Randomise</button>
+                    <button id="btn-rotate">Rotate</button>
+                    <button id="btn-randomise">Randomise</button>
                 </div>
-                <button id="btn-ready" disabled aria-label="Confirm fleet and continue">Ready</button>
+                <button id="btn-ready" disabled>Ready</button>
+                <div>
+                    <div class="grid-title" id="placement-grid-label">Your Board</div>
+                    <div class="grid-outer">
+                        <div class="col-labels" id="placement-col-labels"></div>
+                        <div class="row-labels-and-grid">
+                            <div class="row-labels" id="placement-row-labels"></div>
+                            <div class="grid" id="placement-grid" role="grid" aria-label="Placement grid"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="grid-wrapper">
-                <div class="grid-label" id="placement-grid-label">Your board</div>
-                <div class="grid" id="placement-grid" role="grid" aria-label="Placement grid"></div>
-            </div>
+
         </div>
     </section>
 
-    <!-- Screen 3: Pass device -->
-    <section class="screen" id="pass-screen" aria-label="Pass device to next player">
+    <!-- Screen 3: Pass -->
+    <section class="screen" id="pass-screen" aria-label="Pass device">
         <h2 id="pass-title">Hand Over the Device</h2>
-        <p id="pass-message">Cover the screen, then pass to the next player.</p>
-        <button id="btn-pass" aria-label="Continue to next player">I'm ready</button>
+        <p id="pass-message">Cover the screen and pass to the next player.</p>
+        <button id="btn-pass">I'm Ready</button>
     </section>
 
     <!-- Screen 4: Battle -->
     <section class="screen" id="battle-screen" aria-label="Battle phase">
         <h2 id="battle-title">Battle Phase</h2>
-        <div class="status-bar" id="battle-status">Click on the enemy grid to fire!</div>
+        <div id="shot-result" aria-live="assertive"></div>
         <div class="battle-layout">
-            <div class="grid-wrapper">
-                <div class="grid-label" id="enemy-label">Enemy Waters</div>
-                <div class="grid" id="enemy-grid" role="grid" aria-label="Enemy grid – click to fire"></div>
-                <ul class="fleet-tracker" id="enemy-fleet-tracker" aria-label="Enemy fleet status"></ul>
+
+            <!-- Left: fleet tracker -->
+            <div class="fleet-sidebar">
+                <h3 id="enemy-fleet-label">Enemy Fleet</h3>
+                <ul id="enemy-fleet-list" style="list-style:none;display:flex;flex-direction:column;gap:8px" aria-label="Enemy fleet status"></ul>
             </div>
-            <div class="grid-wrapper">
-                <div class="grid-label" id="own-label">Your Waters</div>
-                <div class="grid" id="own-grid" role="grid" aria-label="Your grid – shows incoming shots"></div>
+
+            <!-- Centre: enemy grid -->
+            <div>
+                <div class="grid-title" id="enemy-grid-title">Enemy Waters</div>
+                <div class="grid-outer">
+                    <div class="col-labels" id="enemy-col-labels"></div>
+                    <div class="row-labels-and-grid">
+                        <div class="row-labels" id="enemy-row-labels"></div>
+                        <div class="grid" id="enemy-grid" role="grid" aria-label="Enemy grid, click to fire"></div>
+                    </div>
+                </div>
+                <div class="btn-row" style="margin-top:12px">
+                    <button id="btn-continue-turn" style="display:none">Continue</button>
+                </div>
             </div>
+
+            <!-- Right: own grid -->
+            <div>
+                <div class="grid-title" id="own-grid-title">Your Waters</div>
+                <div class="grid-outer">
+                    <div class="col-labels" id="own-col-labels"></div>
+                    <div class="row-labels-and-grid">
+                        <div class="row-labels" id="own-row-labels"></div>
+                        <div class="grid" id="own-grid" role="grid" aria-label="Your grid"></div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </section>
 
@@ -82,7 +116,7 @@
         <h2>Game Over</h2>
         <div id="result-winner" aria-live="assertive"></div>
         <div class="btn-row">
-            <button id="btn-play-again" aria-label="Play again">Play Again</button>
+            <button id="btn-play-again">Play Again</button>
         </div>
     </section>
 
