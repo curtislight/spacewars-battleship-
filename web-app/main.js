@@ -15,6 +15,19 @@ const SHIP_IMAGES = {
     "Millennium Falcon": Images.millennium_falcon
 };
 
+
+const SHIP_COLORS = {
+    "TIE Fighter":       "#00cfff",
+    "Jedi Starfighter":  "#ff4444",
+    "Slave I":           "#44ff88",
+    "X-wing":            "#ffaa00",
+    "Millennium Falcon": "#cc44ff"
+};
+
+const ship_css_class = function (name) {
+    return "ship-" + name.toLowerCase().replace(/ /g, "-");
+};
+
 // Avatar options for player selection
 const AVATARS = ["🤖", "👽", "🧑‍🚀", "🦾", "👾", "🛸", "⚡", "🌌"];
 
@@ -221,54 +234,11 @@ const make_footprint = function (ship_def, placed_ship, board) {
     return wrap;
 };
 
-// ── ship images spanning footprint on own grid ────────────────────────────────
+// Ship images replaced by coloured cells - no overlay needed
 const overlay_ship_images = function (grid_el, board) {
-    grid_el.querySelectorAll(".ship-span-img").forEach((n) => n.remove());
-
-    board.fleet.forEach(function (ship) {
-        const rows    = ship.cells.map((c) => c[0]);
-        const cols    = ship.cells.map((c) => c[1]);
-        const min_row = Math.min(...rows);
-        const min_col = Math.min(...cols);
-        const max_row = Math.max(...rows);
-        const max_col = Math.max(...cols);
-
-        const span_rows = max_row - min_row + 1;
-        const span_cols = max_col - min_col + 1;
-
-        const anchor      = get_cell(grid_el, min_row, min_col);
-        const grid_rect   = grid_el.getBoundingClientRect();
-        const anchor_rect = anchor.getBoundingClientRect();
-
-        const left = anchor_rect.left - grid_rect.left;
-        const top  = anchor_rect.top  - grid_rect.top;
-
-        const img = document.createElement("img");
-        img.className = "ship-span-img";
-        img.src = SHIP_IMAGES[ship.name] || "";
-        img.alt = ship.name;
-
-        const rot = get_ship_rotation(ship);
-        // for vertical ships, the bounding box is tall×narrow; we size the image
-        // to the longer dimension and rotate it so the nose points the right way
-        if (rot !== 0) {
-            const size = Math.max(span_rows, span_cols) * CELL_SIZE;
-            const small = Math.min(span_rows, span_cols) * CELL_SIZE;
-            img.style.width  = size + "px";
-            img.style.height = small + "px";
-            img.style.transformOrigin = "top left";
-            img.style.transform  = `rotate(${rot}deg) translateX(-${small}px)`;
-            img.style.left = (left + small) + "px";
-            img.style.top  = top + "px";
-        } else {
-            img.style.width  = (span_cols * CELL_SIZE) + "px";
-            img.style.height = (span_rows * CELL_SIZE) + "px";
-            img.style.left   = left + "px";
-            img.style.top    = top  + "px";
-        }
-
-        grid_el.appendChild(img);
-    });
+    // Colours applied via paint_own_grid class assignment
+    void grid_el;
+    void board;
 };
 
 // ── preview outline (single clean border around all preview cells) ────────────
@@ -352,9 +322,14 @@ const refresh_placement_grid = function () {
     el("placement-grid").querySelectorAll(".cell").forEach(function (cell) {
         const row = parseInt(cell.dataset.row, 10);
         const col = parseInt(cell.dataset.col, 10);
-        cell.className = "cell" + (
-            occupied.some((c) => c[0] === row && c[1] === col) ? " ship" : ""
+        const ship_here = placement_board.fleet.find(
+            (s) => s.cells.some((c) => c[0] === row && c[1] === col)
         );
+        if (ship_here) {
+            cell.className = "cell ship " + ship_css_class(ship_here.name);
+        } else {
+            cell.className = "cell";
+        }
     });
 };
 
@@ -493,7 +468,15 @@ const paint_own_grid = function () {
         cell.disabled  = true;
 
         const on_ship = Battleship.is_hit(coord, board);
-        if (on_ship) { cell.classList.add("ship"); }
+        if (on_ship) {
+            cell.classList.add("ship");
+            const ship_on_cell = board.fleet.find(
+                (s) => s.cells.some((c) => c[0] === row && c[1] === col)
+            );
+            if (ship_on_cell) {
+                cell.classList.add(ship_css_class(ship_on_cell.name));
+            }
+        }
 
         if (Battleship.already_shot(coord, board)) {
             if (on_ship) {
