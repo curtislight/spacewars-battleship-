@@ -17,11 +17,11 @@
         <div class="player-name-row">
             <div class="name-field">
                 <label for="name-p1">Player 1</label>
-                <input id="name-p1" type="text" value="Player 1" aria-label="Player 1 name" maxlength="20">
+                <input id="name-p1" type="text" value="Player 1" maxlength="20">
             </div>
             <div class="name-field">
                 <label for="name-p2">Player 2</label>
-                <input id="name-p2" type="text" value="Player 2" aria-label="Player 2 name" maxlength="20">
+                <input id="name-p2" type="text" value="Player 2" maxlength="20">
             </div>
         </div>
         <div class="btn-row">
@@ -33,14 +33,12 @@
     <section class="screen" id="placement-screen" aria-label="Ship placement">
         <h2 id="placement-title">Place Your Fleet</h2>
         <div class="placement-layout">
-
             <div class="fleet-sidebar">
                 <h3>Your Ships</h3>
-                <ul id="ship-list" style="list-style:none;display:flex;flex-direction:column;gap:8px" aria-label="Ships to place"></ul>
+                <ul id="ship-list" style="list-style:none;display:flex;flex-direction:column;gap:6px" aria-label="Ships to place"></ul>
             </div>
-
-            <div style="display:flex;flex-direction:column;gap:12px;align-items:center">
-                <div class="status-bar" id="placement-status">Select a ship then click the grid.</div>
+            <div class="placement-controls">
+                <div class="status-bar" id="placement-status">Select a ship from the list.</div>
                 <div class="orientation-label" id="orientation-label" aria-live="polite">Orientation: Horizontal →</div>
                 <div class="btn-row">
                     <button id="btn-rotate" aria-label="Rotate ship">↻</button>
@@ -58,7 +56,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </section>
 
@@ -75,10 +72,10 @@
         <div id="shot-result" aria-live="assertive"></div>
         <div class="battle-layout">
 
-            <!-- Left: fleet tracker -->
+            <!-- Left: enemy fleet -->
             <div class="fleet-sidebar">
                 <h3 id="enemy-fleet-label">Enemy Fleet</h3>
-                <ul id="enemy-fleet-list" style="list-style:none;display:flex;flex-direction:column;gap:8px" aria-label="Enemy fleet status"></ul>
+                <ul id="enemy-fleet-list" style="list-style:none;display:flex;flex-direction:column;gap:6px" aria-label="Enemy fleet status"></ul>
             </div>
 
             <!-- Centre: enemy grid -->
@@ -91,8 +88,8 @@
                         <div class="grid" id="enemy-grid" role="grid" aria-label="Enemy grid, click to fire"></div>
                     </div>
                 </div>
-                <div class="btn-row" style="margin-top:12px">
-                    <button id="btn-continue-turn" style="display:none">Continue</button>
+                <div class="btn-row" style="margin-top:10px">
+                    <button id="btn-continue-turn" style="display:none">Continue →</button>
                 </div>
             </div>
 
@@ -106,6 +103,12 @@
                         <div class="grid" id="own-grid" role="grid" aria-label="Your grid"></div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Far right: event log -->
+            <div class="event-log" aria-label="Game event log" aria-live="polite">
+                <h3>Battle Log</h3>
+                <div id="log-entries"></div>
             </div>
 
         </div>
