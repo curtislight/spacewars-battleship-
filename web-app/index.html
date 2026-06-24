@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en-gb">
+<meta charset="utf-8">
+<title>Spacewars Battleship</title>
+<link rel="stylesheet" href="default.css">
+<script type="module" src="main.js"></script>
+
+<header>
+    <h1>⚔ Spacewars Battleship</h1>
+</header>
+
+<main tabindex="-1">
+
+    <!-- Screen 1: Name entry -->
+    <section class="screen active" id="name-screen" aria-label="Player name entry">
+        <h2>Enter Player Names</h2>
+        <div class="player-name-row">
+            <div class="name-field">
+                <label for="name-p1">Player 1</label>
+                <input id="name-p1" type="text" value="Player 1" aria-label="Player 1 name" maxlength="20">
+            </div>
+            <div class="name-field">
+                <label for="name-p2">Player 2</label>
+                <input id="name-p2" type="text" value="Player 2" aria-label="Player 2 name" maxlength="20">
+            </div>
+        </div>
+        <div class="btn-row">
+            <button id="btn-start-placement" aria-label="Start game">Start Game</button>
+        </div>
+    </section>
+
+    <!-- Screen 2: Ship placement -->
+    <section class="screen" id="placement-screen" aria-label="Ship placement">
+        <h2 id="placement-title">Place Your Fleet</h2>
+        <div class="status-bar" id="placement-status">Select a ship, then click the grid to place it.</div>
+        <div class="placement-layout">
+            <div class="placement-sidebar">
+                <p style="color:var(--text-dim);font-size:0.85rem">Your ships</p>
+                <ul class="ship-list" id="ship-list" aria-label="Ships to place"></ul>
+                <div class="orientation-indicator" id="orientation-label" aria-live="polite">
+                    Orientation: Horizontal →
+                </div>
+                <div class="btn-row">
+                    <button id="btn-rotate" aria-label="Rotate selected ship">Rotate</button>
+                    <button id="btn-randomise" aria-label="Place all ships randomly">Randomise</button>
+                </div>
+                <button id="btn-ready" disabled aria-label="Confirm fleet and continue">Ready</button>
+            </div>
+            <div class="grid-wrapper">
+                <div class="grid-label" id="placement-grid-label">Your board</div>
+                <div class="grid" id="placement-grid" role="grid" aria-label="Placement grid"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Screen 3: Pass device -->
+    <section class="screen" id="pass-screen" aria-label="Pass device to next player">
+        <h2 id="pass-title">Hand Over the Device</h2>
+        <p id="pass-message">Cover the screen, then pass to the next player.</p>
+        <button id="btn-pass" aria-label="Continue to next player">I'm ready</button>
+    </section>
+
+    <!-- Screen 4: Battle -->
+    <section class="screen" id="battle-screen" aria-label="Battle phase">
+        <h2 id="battle-title">Battle Phase</h2>
+        <div class="status-bar" id="battle-status">Click on the enemy grid to fire!</div>
+        <div class="battle-layout">
+            <div class="grid-wrapper">
+                <div class="grid-label" id="enemy-label">Enemy Waters</div>
+                <div class="grid" id="enemy-grid" role="grid" aria-label="Enemy grid – click to fire"></div>
+                <ul class="fleet-tracker" id="enemy-fleet-tracker" aria-label="Enemy fleet status"></ul>
+            </div>
+            <div class="grid-wrapper">
+                <div class="grid-label" id="own-label">Your Waters</div>
+                <div class="grid" id="own-grid" role="grid" aria-label="Your grid – shows incoming shots"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Screen 5: Result -->
+    <section class="screen" id="result-screen" aria-label="Game result">
+        <h2>Game Over</h2>
+        <div id="result-winner" aria-live="assertive"></div>
+        <div class="btn-row">
+            <button id="btn-play-again" aria-label="Play again">Play Again</button>
+        </div>
+    </section>
+
+</main>
