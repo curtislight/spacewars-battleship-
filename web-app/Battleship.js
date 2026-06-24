@@ -4,6 +4,7 @@
  * It exposes pure functions that act on plain game-state objects.
  * @namespace Battleship
  * @author Curtis
+ * @version 2025/26
  */
 const Battleship = Object.create(null);
 
@@ -15,17 +16,33 @@ const Battleship = Object.create(null);
 Battleship.GRID_SIZE = 10;
 
 /**
- * The fleet every player must place: the five ships and their lengths.
- * Themed after Star Wars craft, sized by the classic Battleship rules.
+ * The four rotations of the T-shaped X-wing, as cell offsets from an origin.
+ * Each rotation is an array of [row, col] offsets.
+ * @memberof Battleship
+ * @constant {number[][][]}
+ */
+Battleship.XWING_ROTATIONS = Object.freeze([
+    // T pointing right: stem goes down, bar goes right
+    Object.freeze([[0, 0], [1, 0], [2, 0], [1, 1], [1, 2]]),
+    // T pointing left: stem goes down, bar goes left
+    Object.freeze([[0, 0], [1, 0], [2, 0], [1, -1], [1, -2]]),
+    // T pointing down: stem goes right, bar goes down
+    Object.freeze([[0, 0], [0, 1], [0, 2], [1, 1], [2, 1]]),
+    // T pointing up: stem goes right, bar goes up
+    Object.freeze([[2, 0], [2, 1], [2, 2], [1, 1], [0, 1]])
+]);
+
+/**
+ * The fleet every player must place.
  * @memberof Battleship
  * @constant {Object[]}
  */
 Battleship.ships = Object.freeze([
-    Object.freeze({"name": "Death Star", "size": 5}),
-    Object.freeze({"name": "Star Destroyer", "size": 4}),
-    Object.freeze({"name": "Millennium Falcon", "size": 3}),
-    Object.freeze({"name": "X-wing", "size": 3}),
-    Object.freeze({"name": "TIE Fighter", "size": 2})
+    Object.freeze({"name": "TIE Fighter", "size": 2, "shape": "line"}),
+    Object.freeze({"name": "Jedi Starfighter", "size": 2, "shape": "line"}),
+    Object.freeze({"name": "Slave I", "size": 3, "shape": "line"}),
+    Object.freeze({"name": "X-wing", "size": 5, "shape": "xwing"}),
+    Object.freeze({"name": "Millennium Falcon", "size": 4, "shape": "line"})
 ]);
 
 /**
@@ -39,13 +56,14 @@ Battleship.ships = Object.freeze([
  * A ship that has been placed on a board.
  * @memberof Battleship
  * @typedef {Object} PlacedShip
- * @property {string} name The ship's name, e.g. "X-wing".
- * @property {number} size How many cells long the ship is.
+ * @property {string} name The ship's name.
+ * @property {number} size How many cells the ship occupies.
+ * @property {string} shape Either "line" or "xwing".
  * @property {Battleship.Coordinate[]} cells The cells the ship occupies.
  */
 
 /**
- * A single player's board: their fleet, and the shots fired at them.
+ * A single player's board.
  * @memberof Battleship
  * @typedef {Object} Board
  * @property {Battleship.PlacedShip[]} fleet The ships on this board.
@@ -53,38 +71,36 @@ Battleship.ships = Object.freeze([
  */
 
 /**
- * Create a new empty board, with no ships placed and no shots fired.
+ * Create a new empty board.
  * @memberof Battleship
  * @function
- * @returns {Battleship.Board} A fresh, empty board.
+ * @returns {Battleship.Board} A fresh empty board.
  */
 Battleship.empty_board = function () {
     return {"fleet": [], "shots": []};
 };
 
 /**
- * A small helper: produce the list [0, 1, ..., n - 1].
+ * Produce the list [0, 1, ..., n - 1].
  * @function
  * @param {number} n How many numbers to produce.
- * @returns {number[]} The list [0, 1, ..., n - 1].
+ * @returns {number[]} The range.
  */
 const range = function (n) {
-    return Array.from({"length": n}, function (ignore, index) {
-        return index;
+    return Array.from({"length": n}, function (ignore, i) {
+        return i;
     });
 };
 
 /**
- * Work out which cells a ship would occupy if its first cell were at
- * [row, col] and it extended in the given direction.
- * Does not check whether those cells are on the board or free.
+ * Work out which cells a straight-line ship would occupy.
  * @memberof Battleship
  * @function
- * @param {number} row The row of the ship's first cell.
- * @param {number} col The column of the ship's first cell.
- * @param {number} size How many cells long the ship is.
+ * @param {number} row The row of the first cell.
+ * @param {number} col The column of the first cell.
+ * @param {number} size How many cells long.
  * @param {string} orientation Either "horizontal" or "vertical".
- * @returns {Battleship.Coordinate[]} The coordinates the ship would occupy.
+ * @returns {Battleship.Coordinate[]} The cells occupied.
  */
 Battleship.ship_cells = function (row, col, size, orientation) {
     return range(size).map(function (offset) {
@@ -92,6 +108,21 @@ Battleship.ship_cells = function (row, col, size, orientation) {
             return [row, col + offset];
         }
         return [row + offset, col];
+    });
+};
+
+/**
+ * Work out which cells the T-shaped X-wing would occupy.
+ * @memberof Battleship
+ * @function
+ * @param {number} row The origin row.
+ * @param {number} col The origin column.
+ * @param {number} rotation Index into XWING_ROTATIONS (0-3).
+ * @returns {Battleship.Coordinate[]} The five cells occupied.
+ */
+Battleship.xwing_cells = function (row, col, rotation) {
+    return Battleship.XWING_ROTATIONS[rotation].map(function (offset) {
+        return [row + offset[0], col + offset[1]];
     });
 };
 
@@ -112,18 +143,18 @@ Battleship.is_on_board = function (coord) {
 };
 
 /**
- * Returns true if two coordinates refer to the same cell.
+ * Returns true if two coordinates are equal.
  * @function
  * @param {Battleship.Coordinate} a First coordinate.
  * @param {Battleship.Coordinate} b Second coordinate.
- * @returns {boolean} Whether the coordinates are equal.
+ * @returns {boolean} Whether equal.
  */
 const coords_equal = function (a, b) {
     return a[0] === b[0] && a[1] === b[1];
 };
 
 /**
- * Returns all cells currently occupied by ships on a board.
+ * Returns all cells occupied by ships on a board.
  * @memberof Battleship
  * @function
  * @param {Battleship.Board} board The board to inspect.
@@ -136,8 +167,7 @@ Battleship.occupied_cells = function (board) {
 };
 
 /**
- * Returns whether a proposed set of cells is legal to place on a board.
- * Legal means: every cell is on the grid, and none overlap an existing ship.
+ * Returns whether a proposed set of cells is legal to place.
  * @memberof Battleship
  * @function
  * @param {Battleship.Coordinate[]} cells The cells to check.
@@ -159,70 +189,77 @@ Battleship.can_place = function (cells, board) {
 };
 
 /**
- * Returns a new board with one ship added at the given cells.
- * If placement is illegal, returns undefined.
- * The original board is never modified.
+ * Returns a new board with one ship added.
+ * Returns undefined if placement is illegal.
  * @memberof Battleship
  * @function
- * @param {string} name The ship's name.
- * @param {number} size The ship's size.
- * @param {Battleship.Coordinate[]} cells The cells to place the ship on.
+ * @param {string} name The ship name.
+ * @param {number} size The ship size.
+ * @param {string} shape The ship shape.
+ * @param {Battleship.Coordinate[]} cells The cells to place on.
  * @param {Battleship.Board} board The board to place into.
- * @returns {Battleship.Board|undefined} The new board, or undefined if illegal.
+ * @returns {Battleship.Board|undefined} New board or undefined.
  */
-Battleship.place_ship = function (name, size, cells, board) {
+Battleship.place_ship = function (name, size, shape, cells, board) {
     if (!Battleship.can_place(cells, board)) {
         return undefined;
     }
     return {
-        "fleet": [...board.fleet, {"name": name, "size": size, "cells": cells}],
+        "fleet": [
+            ...board.fleet,
+            {"name": name, "size": size, "shape": shape, "cells": cells}
+        ],
         "shots": board.shots
     };
 };
 
 /**
- * Returns a random integer from 0 up to (but not including) max.
+ * Returns a random integer from 0 up to (not including) max.
  * @function
- * @param {number} max Upper bound (exclusive).
- * @returns {number} A random integer in [0, max).
+ * @param {number} max Upper bound exclusive.
+ * @returns {number} Random integer.
  */
 const random_int = function (max) {
     return Math.floor(Math.random() * max);
 };
 
 /**
- * Returns a board with all ships from the standard fleet placed randomly.
- * Ships are placed one at a time; if a random position is illegal,
- * a new one is tried until a legal position is found.
+ * Returns a board with all ships placed randomly.
  * @memberof Battleship
  * @function
- * @returns {Battleship.Board} A board with all five ships placed.
+ * @returns {Battleship.Board} A fully placed board.
  */
 Battleship.random_board = function () {
     return Battleship.ships.reduce(function (board, ship) {
         let placed = undefined;
         while (placed === undefined) {
-            const orientation = (
-                random_int(2) === 0
-                ? "horizontal"
-                : "vertical"
-            );
             const row = random_int(Battleship.GRID_SIZE);
             const col = random_int(Battleship.GRID_SIZE);
-            const cells = Battleship.ship_cells(row, col, ship.size, orientation);
-            placed = Battleship.place_ship(ship.name, ship.size, cells, board);
+            let cells;
+            if (ship.shape === "xwing") {
+                const rotation = random_int(4);
+                cells = Battleship.xwing_cells(row, col, rotation);
+            } else {
+                const orientation = (
+                    random_int(2) === 0 ? "horizontal" : "vertical"
+                );
+                cells = Battleship.ship_cells(row, col, ship.size, orientation);
+            }
+            placed = Battleship.place_ship(
+                ship.name, ship.size, ship.shape, cells, board
+            );
         }
         return placed;
     }, Battleship.empty_board());
 };
 
 /**
- * Returns whether a coordinate has already been shot at on a board.
+ * Returns whether a coordinate has already been shot at.
  * @memberof Battleship
  * @function
  * @param {Battleship.Coordinate} coord The coordinate to check.
  * @param {Battleship.Board} board The board to check.
- * @returns {boolean} Whether that cell has been shot at.
+ * @returns {boolean} Whether already shot.
  */
 Battleship.already_shot = function (coord, board) {
     return board.shots.some(function (shot) {
@@ -231,12 +268,12 @@ Battleship.already_shot = function (coord, board) {
 };
 
 /**
- * Returns whether a shot at the given coordinate hits any ship on the board.
+ * Returns whether a shot hits any ship.
  * @memberof Battleship
  * @function
- * @param {Battleship.Coordinate} coord The coordinate being fired at.
- * @param {Battleship.Board} board The board being fired at.
- * @returns {boolean} Whether the shot is a hit.
+ * @param {Battleship.Coordinate} coord The coordinate fired at.
+ * @param {Battleship.Board} board The board fired at.
+ * @returns {boolean} Whether it is a hit.
  */
 Battleship.is_hit = function (coord, board) {
     return Battleship.occupied_cells(board).some(function (cell) {
@@ -245,7 +282,7 @@ Battleship.is_hit = function (coord, board) {
 };
 
 /**
- * Returns whether all cells of a ship have been shot at.
+ * Returns whether all cells of a ship have been shot.
  * @memberof Battleship
  * @function
  * @param {Battleship.PlacedShip} ship The ship to check.
@@ -259,14 +296,12 @@ Battleship.is_sunk = function (ship, board) {
 };
 
 /**
- * Fire a shot at a coordinate on a board.
- * Returns a new board with the shot recorded.
- * Returns undefined if the coordinate is off the board or already shot at.
+ * Fire a shot at a coordinate. Returns new board or undefined if illegal.
  * @memberof Battleship
  * @function
  * @param {Battleship.Coordinate} coord The coordinate to fire at.
  * @param {Battleship.Board} board The board being fired at.
- * @returns {Battleship.Board|undefined} The updated board, or undefined if illegal.
+ * @returns {Battleship.Board|undefined} Updated board or undefined.
  */
 Battleship.fire = function (coord, board) {
     if (!Battleship.is_on_board(coord)) {
@@ -282,14 +317,16 @@ Battleship.fire = function (coord, board) {
 };
 
 /**
- * Returns whether the game is over for this board,
- * i.e. every ship in the fleet has been sunk.
+ * Returns whether all ships on a board have been sunk.
  * @memberof Battleship
  * @function
  * @param {Battleship.Board} board The board to check.
  * @returns {boolean} Whether all ships are sunk.
  */
 Battleship.is_defeated = function (board) {
+    if (board.fleet.length === 0) {
+        return false;
+    }
     return board.fleet.every(function (ship) {
         return Battleship.is_sunk(ship, board);
     });
