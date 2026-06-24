@@ -22,22 +22,26 @@ const AVATARS = ["🤖", "👽", "🧑‍🚀", "🦾", "👾", "🛸", "⚡", "
 // line ships: 0 = horizontal, 90 = vertical
 // xwing rotations 0,1 are vertical-stem, 2,3 are horizontal-stem
 // falcon rotations 0,2 are landscape, 1,3 are portrait
+// Each image has a "natural" orientation (the direction the ship faces in the file).
+// portrait_images face UP naturally, so rotate 90 when placed horizontally.
+// landscape_images face RIGHT naturally, so rotate 90 when placed vertically.
+const PORTRAIT_IMAGES = {"TIE Fighter": true};
+
 const get_ship_rotation = function (ship) {
-    if (ship.shape === "line") {
-        const rows = ship.cells.map((c) => c[0]);
-        const cols = ship.cells.map((c) => c[1]);
-        return Math.max(...rows) > Math.min(...rows) ? 90 : 0;
+    const rows = ship.cells.map((c) => c[0]);
+    const cols = ship.cells.map((c) => c[1]);
+    const row_span = Math.max(...rows) - Math.min(...rows);
+    const col_span = Math.max(...cols) - Math.min(...cols);
+    const is_vertical = row_span > col_span;
+    const is_portrait = PORTRAIT_IMAGES[ship.name] || false;
+    // portrait image placed vertically: no rotation needed
+    // portrait image placed horizontally: rotate 90
+    // landscape image placed horizontally: no rotation needed
+    // landscape image placed vertically: rotate 90
+    if (is_portrait) {
+        return is_vertical ? 0 : 90;
     }
-    if (ship.shape === "xwing") {
-        // rotation 0,1: stem is vertical; 2,3: stem is horizontal
-        const row_span = Math.max(...ship.cells.map((c) => c[0])) - Math.min(...ship.cells.map((c) => c[0]));
-        return row_span >= 2 ? 0 : 90;
-    }
-    if (ship.shape === "falcon") {
-        const col_span = Math.max(...ship.cells.map((c) => c[1])) - Math.min(...ship.cells.map((c) => c[1]));
-        return col_span >= 2 ? 0 : 90;
-    }
-    return 0;
+    return is_vertical ? 90 : 0;
 };
 
 // Footprint info for sidebar
@@ -61,6 +65,7 @@ let xwing_rotation   = 0;
 let falcon_rotation  = 0;
 let active_player    = 0;
 let waiting          = false;
+let confirm_coord    = null;  // cell selected, awaiting confirm
 let log_entries      = [];
 
 // ── helpers ──────────────────────────────────────────────────────────────────
@@ -580,11 +585,61 @@ el("btn-continue-turn").addEventListener("click", function () {
     el("btn-pass").onclick = function () {
         active_player = next;
         el("shot-result").textContent = "";
+        el("btn-fire").style.display = "none";
         el("btn-continue-turn").style.display = "none";
+        confirm_coord = null;
         waiting = false;
         refresh_battle(false);
         show_screen("battle-screen");
     };
+});
+
+
+el("btn-fire").addEventListener("click", function () {
+    if (!confirm_coord || waiting) { return; }
+    const row = confirm_coord[0];
+    const col = confirm_coord[1];
+    const defender   = 1 - active_player;
+    const next_board = Battleship.fire([row, col], boards[defender]);
+    if (next_board === undefined) { return; }
+    boards[defender] = next_board;
+    confirm_coord = null;
+    el("btn-fire").style.display = "none";
+
+    const coord = [row, col];
+    const hit   = Battleship.is_hit(coord, boards[defender]);
+    const ship  = hit
+        ? boards[defender].fleet.find((s) => s.cells.some((c) => c[0] === row && c[1] === col))
+        : null;
+    const sunk  = ship && Battleship.is_sunk(ship, boards[defender]);
+    const pos   = ROW_LABELS[row] + COL_LABELS[col];
+
+    if (sunk) {
+        shake_screen();
+        el("shot-result").style.color   = "#cc2200";
+        el("shot-result").textContent   = ship.name + " DESTROYED";
+        add_log(player_names[active_player] + " → " + pos + ": " + ship.name + " DESTROYED", "sunk");
+    } else if (hit) {
+        shake_screen();
+        el("shot-result").style.color   = "#FFE81A";
+        el("shot-result").textContent   = "HIT";
+        add_log(player_names[active_player] + " → " + pos + ": HIT", "hit");
+    } else {
+        el("shot-result").style.color   = "#00d4ff";
+        el("shot-result").textContent   = "MISS";
+        add_log(player_names[active_player] + " → " + pos + ": miss", "miss");
+    }
+
+    waiting = true;
+    refresh_battle(true);
+
+    const fired = get_cell(el("enemy-grid"), row, col);
+    if (fired) {
+        fired.classList.add("just-fired");
+        animate_cell(fired, hit ? "hit" : "miss");
+    }
+    pop_result();
+    el("btn-continue-turn").style.display = "inline-block";
 });
 
 el("btn-play-again").addEventListener("click", function () {
@@ -612,52 +667,34 @@ const start_battle = function () {
     build_grid(el("enemy-grid"), function (row, col) {
         if (waiting) { return; }
 
-        const defender   = 1 - active_player;
-        const next_board = Battleship.fire([row, col], boards[defender]);
-        if (next_board === undefined) { return; }
-        boards[defender] = next_board;
-
-        const coord = [row, col];
-        const hit   = Battleship.is_hit(coord, boards[defender]);
-        const ship  = hit
-            ? boards[defender].fleet.find((s) => s.cells.some((c) => c[0] === row && c[1] === col))
-            : null;
-        const sunk  = ship && Battleship.is_sunk(ship, boards[defender]);
-
-        const pos = ROW_LABELS[row] + COL_LABELS[col];
-
-        if (sunk) {
-            shake_screen();
-            el("shot-result").style.color   = "#cc2200";
-            el("shot-result").textContent   = `${ship.name} DESTROYED`;
-            add_log(`${player_names[active_player]} → ${pos}: ${ship.name} DESTROYED`, "sunk");
-        } else if (hit) {
-            shake_screen();
-            el("shot-result").style.color   = "#FFE81A";
-            el("shot-result").textContent   = "HIT";
-            add_log(`${player_names[active_player]} → ${pos}: HIT`, "hit");
-        } else {
-            el("shot-result").style.color   = "#00d4ff";
-            el("shot-result").textContent   = "MISS";
-            add_log(`${player_names[active_player]} → ${pos}: miss`, "miss");
+        // Already selected this cell — deselect
+        if (confirm_coord && confirm_coord[0] === row && confirm_coord[1] === col) {
+            confirm_coord = null;
+            el("btn-fire").style.display = "none";
+            el("shot-result").textContent = "";
+            refresh_battle(false);
+            return;
         }
 
-        waiting = true;
-        refresh_battle(true);
+        // Can't fire at already-shot cell
+        if (Battleship.already_shot([row, col], boards[1 - active_player])) { return; }
 
-        const fired = get_cell(el("enemy-grid"), row, col);
-        if (fired) {
-            fired.classList.add("just-fired");
-            animate_cell(fired, hit ? "hit" : "miss");
-        }
-        pop_result();
-        el("btn-continue-turn").style.display = "inline-block";
+        // Select cell for confirmation
+        confirm_coord = [row, col];
+        refresh_battle(false);
+        const selected = get_cell(el("enemy-grid"), row, col);
+        if (selected) { selected.classList.add("just-fired"); }
+        el("shot-result").style.color = "#aaa";
+        el("shot-result").textContent = ROW_LABELS[row] + COL_LABELS[col] + " — Fire?";
+        el("btn-fire").style.display = "inline-block";
     }, null, null);
 
     build_grid(el("own-grid"), null, null, null);
     el("own-grid").querySelectorAll(".cell").forEach((c) => { c.disabled = true; });
 
     waiting = false;
+    confirm_coord = null;
+    el("btn-fire").style.display = "none";
     el("btn-continue-turn").style.display = "none";
     el("shot-result").textContent = "";
     refresh_battle(false);
