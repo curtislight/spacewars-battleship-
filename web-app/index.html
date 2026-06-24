@@ -37,25 +37,29 @@
     <section class="screen" id="placement-screen" aria-label="Ship placement">
         <h2 id="placement-title">Place Your Fleet</h2>
         <div class="placement-layout">
-            <div class="fleet-sidebar">
-                <h3>Your Ships</h3>
-                <ul id="ship-list" style="list-style:none;display:flex;flex-direction:column;gap:6px" aria-label="Ships to place"></ul>
-            </div>
-            <div class="placement-controls">
-                <div class="status-bar" id="placement-status">Select a ship from the list.</div>
-                <div class="orientation-label" id="orientation-label" aria-live="polite">Orientation: Horizontal →</div>
-                <div class="btn-row">
-                    <button id="btn-rotate" aria-label="Rotate ship">↻</button>
-                    <button id="btn-randomise">Randomise</button>
+            <div class="placement-sidebar-and-grid">
+                <div class="fleet-sidebar" id="placement-fleet-sidebar">
+                    <h3>Your Ships</h3>
+                    <ul id="ship-list" style="list-style:none;display:flex;flex-direction:column;gap:6px" aria-label="Ships to place"></ul>
                 </div>
-                <button id="btn-ready" disabled>Ready</button>
-                <div>
-                    <div class="grid-title" id="placement-grid-label">Your Board</div>
-                    <div class="grid-outer">
-                        <div class="col-labels" id="placement-col-labels"></div>
-                        <div class="row-labels-and-grid">
-                            <div class="row-labels" id="placement-row-labels"></div>
-                            <div class="grid" id="placement-grid" role="grid" aria-label="Placement grid"></div>
+                <div class="placement-grid-col">
+                    <div class="placement-controls">
+                        <div class="status-bar" id="placement-status">Select a ship from the list.</div>
+                        <div class="orientation-label" id="orientation-label" aria-live="polite">Orientation: Horizontal →</div>
+                        <div class="btn-row">
+                            <button id="btn-rotate" aria-label="Rotate ship">↻</button>
+                            <button id="btn-randomise">Randomise</button>
+                        </div>
+                        <button id="btn-ready" disabled>Ready</button>
+                    </div>
+                    <div>
+                        <div class="grid-title" id="placement-grid-label">Your Board</div>
+                        <div class="grid-outer">
+                            <div class="col-labels" id="placement-col-labels"></div>
+                            <div class="row-labels-and-grid">
+                                <div class="row-labels" id="placement-row-labels"></div>
+                                <div class="grid" id="placement-grid" role="grid" aria-label="Placement grid"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -75,23 +79,27 @@
         <h2 id="battle-title">Battle Phase</h2>
         <div id="shot-result" aria-live="assertive"></div>
         <div class="battle-layout">
+
             <div class="fleet-sidebar">
                 <h3 id="enemy-fleet-label">Enemy Fleet</h3>
                 <ul id="enemy-fleet-list" style="list-style:none;display:flex;flex-direction:column;gap:6px" aria-label="Enemy fleet status"></ul>
             </div>
+
             <div>
                 <div class="grid-title" id="enemy-grid-title">Enemy Waters</div>
                 <div class="grid-outer">
                     <div class="col-labels" id="enemy-col-labels"></div>
                     <div class="row-labels-and-grid">
                         <div class="row-labels" id="enemy-row-labels"></div>
-                        <div class="grid" id="enemy-grid" role="grid" aria-label="Enemy grid, click to fire"></div>
+                        <div class="grid" id="enemy-grid" role="grid" aria-label="Enemy grid, click to select then confirm"></div>
                     </div>
                 </div>
-                <div class="btn-row" style="margin-top:10px">
+                <div class="btn-row" style="margin-top:10px;gap:8px">
+                    <button id="btn-fire" style="display:none" aria-label="Confirm fire">🎯 Fire!</button>
                     <button id="btn-continue-turn" style="display:none">Continue →</button>
                 </div>
             </div>
+
             <div>
                 <div class="grid-title" id="own-grid-title">Your Waters</div>
                 <div class="grid-outer">
@@ -102,10 +110,12 @@
                     </div>
                 </div>
             </div>
+
             <div class="event-log" aria-label="Game event log" aria-live="polite">
                 <h3>Battle Log</h3>
                 <div id="log-entries"></div>
             </div>
+
         </div>
     </section>
 
