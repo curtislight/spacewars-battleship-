@@ -250,3 +250,91 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
     backdrop-filter: blur(4px);
 }
 .name-field input:focus { border-color: var(--accent); outline: none; }
+
+/* ── hit/miss animations ── */
+@keyframes screen-shake {
+    0%   { transform: translate(0, 0); }
+    15%  { transform: translate(-6px, 3px); }
+    30%  { transform: translate(5px, -4px); }
+    45%  { transform: translate(-4px, 5px); }
+    60%  { transform: translate(4px, -2px); }
+    75%  { transform: translate(-2px, 3px); }
+    90%  { transform: translate(2px, -1px); }
+    100% { transform: translate(0, 0); }
+}
+
+@keyframes cell-explode {
+    0%   { transform: scale(1);    opacity: 1; }
+    40%  { transform: scale(1.6);  opacity: 0.9; }
+    100% { transform: scale(1);    opacity: 1; }
+}
+
+@keyframes cell-splash {
+    0%   { transform: scale(1);   opacity: 1; }
+    30%  { transform: scale(1.3); opacity: 0.7; }
+    60%  { transform: scale(0.9); opacity: 0.9; }
+    100% { transform: scale(1);   opacity: 1; }
+}
+
+@keyframes result-pop {
+    0%   { transform: scale(0.5); opacity: 0; }
+    60%  { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1);   opacity: 1; }
+}
+
+.shake { animation: screen-shake 0.35s ease; }
+.cell.anim-hit  { animation: cell-explode 0.4s ease; }
+.cell.anim-miss { animation: cell-splash  0.4s ease; }
+.result-pop { animation: result-pop 0.35s ease forwards; }
+
+/* ── avatar selection ── */
+.avatar-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 8px;
+}
+
+.avatar-option {
+    width: 64px;
+    height: 64px;
+    border: 2px solid var(--border);
+    background: rgba(0,0,0,0.5);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    border-radius: 4px;
+    transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+    flex-shrink: 0;
+}
+
+.avatar-option:hover, .avatar-option:focus {
+    border-color: var(--cyan);
+    box-shadow: 0 0 10px rgba(0,212,255,0.3);
+    transform: scale(1.08);
+    outline: none;
+}
+
+.avatar-option.selected {
+    border-color: var(--accent);
+    box-shadow: 0 0 12px rgba(255,232,26,0.4);
+}
+
+.avatar-label {
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+
+.player-avatar {
+    font-size: 1.4rem;
+    margin-right: 8px;
+}
+
+/* battle title with avatar */
+#battle-title { display: flex; align-items: center; justify-content: center; gap: 8px; }
