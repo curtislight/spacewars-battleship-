@@ -1,7 +1,7 @@
 /*jslint browser */
 import Battleship from "./Battleship.js";
 
-// ─── game state 
+// --- game state 
 // All mutable state lives here in one place. The module functions are pure;
 // this file owns the side effects (DOM updates, state transitions).
 
@@ -13,7 +13,7 @@ let selected_ship_index = null;  // which ship in the fleet list is selected
 let orientation = "horizontal";  // current placement orientation
 let active_player = 0;           // whose turn it is during battle
 
-// ─── screen management 
+// ---screen management 
 
 const show_screen = function (id) {
     document.querySelectorAll(".screen").forEach(function (s) {
@@ -23,7 +23,7 @@ const show_screen = function (id) {
     document.querySelector("main").focus();
 };
 
-// ─── helpers 
+// --- helpers 
 
 const el = (id) => document.getElementById(id);
 
@@ -33,7 +33,7 @@ const unplaced_ships = function () {
     return Battleship.ships.filter((s) => !placed_names.includes(s.name));
 };
 
-// ─── placement grid 
+// --- placement grid 
 
 const build_placement_grid = function () {
     const grid = el("placement-grid");
@@ -207,7 +207,7 @@ const refresh_placement_ui = function () {
     );
 };
 
-// ─── battle grid 
+// --- battle grid 
 
 const build_battle_grid = function (grid_el, clickable) {
     grid_el.innerHTML = "";
@@ -333,7 +333,7 @@ const refresh_battle_grids = function () {
     el("battle-status").textContent = "Click on the enemy grid to fire!";
 };
 
-// ─── event wiring
+// --- event wiring
 
 // Screen 1: start placement.
 el("btn-start-placement").addEventListener("click", function () {
@@ -431,7 +431,7 @@ el("btn-play-again").addEventListener("click", function () {
     show_screen("name-screen");
 });
 
-// ─── screen starters 
+// --- screen starters 
 
 const start_placement = function () {
     placement_board = Battleship.empty_board();
