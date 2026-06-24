@@ -15,6 +15,9 @@ const SHIP_IMAGES = {
     "Millennium Falcon": Images.millennium_falcon
 };
 
+// Avatar options for player selection
+const AVATARS = ["🤖", "👽", "🧑‍🚀", "🦾", "👾", "🛸", "⚡", "🌌"];
+
 // Rotation angle (degrees) to apply to ship image on own grid
 // line ships: 0 = horizontal, 90 = vertical
 // xwing rotations 0,1 are vertical-stem, 2,3 are horizontal-stem
@@ -48,6 +51,7 @@ const FOOTPRINT = {
 
 // ── state ────────────────────────────────────────────────────────────────────
 let player_names     = ["Player 1", "Player 2"];
+let player_avatars   = ["🤖", "👽"];
 let boards           = [Battleship.empty_board(), Battleship.empty_board()];
 let placement_player = 0;
 let placement_board  = Battleship.empty_board();
@@ -69,6 +73,26 @@ const show_screen = function (id) {
     el(id).classList.add("active");
 };
 
+
+// ── avatar selection ──────────────────────────────────────────────────────────
+const build_avatar_row = function (row_el, player_idx) {
+    row_el.innerHTML = "";
+    AVATARS.forEach(function (emoji, i) {
+        const btn = document.createElement("button");
+        btn.className = "avatar-option" + (
+            player_avatars[player_idx] === emoji ? " selected" : ""
+        );
+        btn.textContent = emoji;
+        btn.setAttribute("aria-label", "Avatar " + emoji);
+        btn.setAttribute("aria-pressed", player_avatars[player_idx] === emoji ? "true" : "false");
+        btn.addEventListener("click", function () {
+            player_avatars[player_idx] = emoji;
+            build_avatar_row(row_el, player_idx);
+        });
+        row_el.appendChild(btn);
+    });
+};
+
 // ── event log ─────────────────────────────────────────────────────────────────
 const add_log = function (text, type) {
     log_entries.push({text, type});
@@ -83,6 +107,35 @@ const add_log = function (text, type) {
 const clear_log = function () {
     log_entries = [];
     el("log-entries").innerHTML = "";
+};
+
+
+// ── animations ────────────────────────────────────────────────────────────────
+const shake_screen = function () {
+    const m = document.querySelector("main");
+    m.classList.remove("shake");
+    // force reflow so animation restarts
+    void m.offsetWidth;
+    m.classList.add("shake");
+    m.addEventListener("animationend", function () {
+        m.classList.remove("shake");
+    }, {"once": true});
+};
+
+const animate_cell = function (cell, type) {
+    cell.classList.remove("anim-hit", "anim-miss");
+    void cell.offsetWidth;
+    cell.classList.add(type === "hit" ? "anim-hit" : "anim-miss");
+    cell.addEventListener("animationend", function () {
+        cell.classList.remove("anim-hit", "anim-miss");
+    }, {"once": true});
+};
+
+const pop_result = function () {
+    const r = el("shot-result");
+    r.classList.remove("result-pop");
+    void r.offsetWidth;
+    r.classList.add("result-pop");
 };
 
 // ── grid builders ─────────────────────────────────────────────────────────────
@@ -279,7 +332,7 @@ const on_placement_click = function (row, col) {
         return;
     }
     const ship = unplaced()[selected_idx];
-    const next = Battleship.place_ship(ship.name, ship.size, ship.shape, cells, placement_board);
+    const next = Battleship.place_ship(ship.name, ship.shape, ship.size, cells, placement_board);
     if (next === undefined) {
         el("placement-status").textContent = "Can't place there – try another spot.";
         return;
@@ -460,7 +513,7 @@ const refresh_battle = function (locked) {
     paint_enemy_grid(locked);
     paint_own_grid();
     refresh_ship_list(el("enemy-fleet-list"), false, boards[1 - active_player]);
-    el("battle-title").textContent      = `${player_names[active_player]}'s Turn`;
+    el("battle-title").innerHTML = `<span class="player-avatar">${player_avatars[active_player]}</span>${player_names[active_player]}'s Turn`;
     el("enemy-grid-title").textContent  = `${player_names[1 - active_player]}'s Waters`;
     el("own-grid-title").textContent    = `${player_names[active_player]}'s Waters`;
     el("enemy-fleet-label").textContent = `${player_names[1 - active_player]}'s Fleet`;
@@ -468,10 +521,13 @@ const refresh_battle = function (locked) {
 
 // ── events ────────────────────────────────────────────────────────────────────
 el("logo").src = Images.logo;
+build_avatar_row(el("avatar-row-p1"), 0);
+build_avatar_row(el("avatar-row-p2"), 1);
 
 el("btn-start-placement").addEventListener("click", function () {
     player_names[0] = el("name-p1").value.trim() || "Player 1";
     player_names[1] = el("name-p2").value.trim() || "Player 2";
+    // avatars already stored in player_avatars via the selection buttons
     boards = [Battleship.empty_board(), Battleship.empty_board()];
     placement_player = 0;
     start_placement();
@@ -571,10 +627,12 @@ const start_battle = function () {
         const pos = ROW_LABELS[row] + COL_LABELS[col];
 
         if (sunk) {
+            shake_screen();
             el("shot-result").style.color   = "#cc2200";
             el("shot-result").textContent   = `${ship.name} DESTROYED`;
             add_log(`${player_names[active_player]} → ${pos}: ${ship.name} DESTROYED`, "sunk");
         } else if (hit) {
+            shake_screen();
             el("shot-result").style.color   = "#FFE81A";
             el("shot-result").textContent   = "HIT";
             add_log(`${player_names[active_player]} → ${pos}: HIT`, "hit");
@@ -588,7 +646,11 @@ const start_battle = function () {
         refresh_battle(true);
 
         const fired = get_cell(el("enemy-grid"), row, col);
-        if (fired) { fired.classList.add("just-fired"); }
+        if (fired) {
+            fired.classList.add("just-fired");
+            animate_cell(fired, hit ? "hit" : "miss");
+        }
+        pop_result();
         el("btn-continue-turn").style.display = "inline-block";
     }, null, null);
 
