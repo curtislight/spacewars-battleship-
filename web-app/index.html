@@ -49,8 +49,8 @@
                         <div class="btn-row">
                             <button id="btn-rotate" aria-label="Rotate ship">↻</button>
                             <button id="btn-randomise">Randomise</button>
+                            <button id="btn-ready" disabled>Ready</button>
                         </div>
-                        <button id="btn-ready" disabled>Ready</button>
                     </div>
                     <div>
                         <div class="grid-title" id="placement-grid-label">Your Board</div>
@@ -70,7 +70,9 @@
     <!-- Screen 3: Pass -->
     <section class="screen" id="pass-screen" aria-label="Pass device">
         <h2 id="pass-title">Hand Over the Device</h2>
-        <p id="pass-message">Cover the screen and pass to the next player.</p>
+        <p id="pass-message" class="pass-instruction">Cover the screen and pass to the next player.</p>
+        <img id="pass-avatar-img" src="" alt="Player avatar" class="pass-avatar">
+        <div id="pass-player-display" class="pass-player-name"></div>
         <button id="btn-pass">I'm Ready</button>
     </section>
 
