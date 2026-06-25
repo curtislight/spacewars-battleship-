@@ -580,3 +580,15 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
     border-bottom: 1px solid var(--border);
     padding-bottom: 4px;
 }
+
+/* ── preview cell highlight - clean solid border ── */
+.cell.preview {
+    background: rgba(0,180,255,0.25) !important;
+    outline: 2px solid #00d4ff !important;
+    z-index: 3;
+}
+.cell.preview-invalid {
+    background: rgba(200,0,0,0.25) !important;
+    outline: 2px solid #cc2200 !important;
+    z-index: 3;
+}
