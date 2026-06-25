@@ -265,11 +265,12 @@ const random_int = function (max) {
 
 /**
  * Returns a board with all ships placed randomly.
+ * This is the only intentionally impure function in the module,
+ * as it relies on Math.random().
  * @memberof Battleship
  * @function
  * @returns {Battleship.Board} A fully placed board.
  */
-Battleship.random_board = function () {
     return Battleship.ships.reduce(function (board, ship) {
         let placed;
         while (placed === undefined) {
