@@ -268,7 +268,7 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
     gap: 24px;
     justify-content: center;
     min-height: calc(100vh - 90px);
-    padding-top: 0;
+    margin-top: -60px;
 }
 .pass-avatar {
     width: 120px;
@@ -504,7 +504,7 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
 /* Make avatar grid wider for 20 avatars */
 .avatar-row {
     display: grid !important;
-    grid-template-columns: repeat(4, 64px);
+    grid-template-columns: repeat(5, 64px);
     gap: 8px;
     max-width: none;
     margin-top: 6px;
@@ -538,4 +538,20 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
 /* ── fire button no emoji ── */
 #btn-fire {
     letter-spacing: 2px;
+}
+
+/* ── placement screen restructure ── */
+.placement-left {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 260px;
+    flex-shrink: 0;
+}
+.placement-btns {
+    justify-content: flex-start !important;
+}
+/* bigger grid - more cells visible */
+:root {
+    --cell-size: 48px;
 }
