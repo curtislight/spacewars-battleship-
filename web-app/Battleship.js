@@ -3,8 +3,7 @@
  * https://en.wikipedia.org/wiki/Battleship_(game)
  * It exposes pure functions that act on plain game-state objects.
  * @namespace Battleship
- * @author Curtis
- * @version 2025/26
+ * @author Curtis Light
  */
 const Battleship = Object.create(null);
 
