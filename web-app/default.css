@@ -1,4 +1,4 @@
-/*jslint browser */
+/* jslint browser */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
@@ -19,7 +19,7 @@
     --font: 'Segoe UI', Arial, sans-serif;
 }
 
-/* ── starfield ── */
+/* starfield */
 html {
     height: 100%;
     background: radial-gradient(ellipse at 20% 30%, rgba(0,60,120,0.18) 0%, transparent 60%),
@@ -68,7 +68,7 @@ html::after {
 
 body { min-height: 100%; color: var(--text); font-family: var(--font); font-size: 14px; position: relative; z-index: 1; }
 
-/* ── header ── */
+/* header */
 header {
     background: rgba(0,0,0,0.88);
     border-bottom: 2px solid var(--accent);
@@ -78,17 +78,17 @@ header {
 }
 header img#logo { height: 78px; width: auto; }
 
-/* ── screens ── */
+/* screens */
 main { display: flex; justify-content: center; padding: 16px 12px; min-height: calc(100vh - 90px); position: relative; z-index: 1; }
 .screen { display: none; width: 100%; max-width: 1400px; flex-direction: column; align-items: center; gap: 14px; }
 .screen.active { display: flex; }
 
-/* ── type ── */
+/* type */
 h2 { font-size: 1rem; color: var(--accent); text-transform: uppercase; letter-spacing: 3px; text-shadow: 0 0 20px rgba(255,232,26,0.4); }
 h3 { font-size: 0.68rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 4px; }
 p  { color: var(--text-dim); font-size: 0.85rem; }
 
-/* ── buttons ── */
+/* buttons */
 button {
     background: rgba(0,0,0,0.6);
     border: 1px solid var(--accent); color: var(--accent);
@@ -120,7 +120,7 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
     50%       { box-shadow: 0 0 16px rgba(255,60,0,0.8); }
 }
 
-/* ── grid ── */
+/* grid */
 .grid-outer { display: inline-flex; flex-direction: column; }
 .col-labels { display: flex; padding-left: var(--cell-size); }
 .col-label  { width: var(--cell-size); text-align: center; font-size: 0.62rem; color: var(--accent); padding: 2px 0; }
@@ -161,20 +161,19 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
 
 /* miss dot removed */
 
-/* ── ship image spanning footprint on own grid ── */
-/* ship-span-img removed - using coloured cells instead */
+/* ship image spanning footprint on own grid */
 
-/* ── preview outline overlay (drawn as SVG over grid) ── */
+/* preview outline overlay (drawn as SVG over grid) */
 .preview-outline {
     position: absolute;
     pointer-events: none;
     z-index: 5;
 }
 
-/* ── grid title ── */
+/* grid title */
 .grid-title { font-size: 0.68rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; text-align: center; text-shadow: 0 0 10px rgba(255,232,26,0.3); }
 
-/* ── fleet sidebar ── */
+/* fleet sidebar */
 .fleet-sidebar { display: flex; flex-direction: column; gap: 6px; width: 220px; flex-shrink: 0; }
 .ship-entry {
     background: rgba(7,17,31,0.88); border: 1px solid var(--border);
@@ -202,7 +201,7 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
 .fp-cell.fp-hit  { background: var(--hit); }
 .fp-cell.fp-sunk { background: #880000; }
 
-/* ── placement layout ── */
+/* placement layout */
 .placement-layout { display: flex; justify-content: center; }
 .placement-sidebar-and-grid {
     display: flex;
@@ -230,13 +229,13 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
 }
 .orientation-label { font-size: 0.75rem; color: var(--text-dim); text-align: center; }
 
-/* ── battle layout ── */
+/* battle layout */
 .battle-layout { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; align-items: flex-start; width: 100%; }
 
-/* ── shot result ── */
+/* shot result */
 #shot-result { font-size: 1rem; font-weight: bold; min-height: 24px; text-align: center; letter-spacing: 3px; text-shadow: 0 0 15px currentColor; }
 
-/* ── event log ── */
+/* event log */
 .event-log {
     background: rgba(0,0,0,0.72);
     border: 1px solid var(--border);
@@ -261,7 +260,7 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
 .log-entry.log-sunk { color: #ff4422; }
 .log-entry.log-miss { color: var(--cyan); }
 
-/* ── pass / result screens ── */
+/* pass / result screens */
 #pass-screen {
     text-align: center;
     gap: 24px;
@@ -293,7 +292,7 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
 #result-screen { text-align: center; gap: 24px; }
 #result-winner { font-size: 1.3rem; color: var(--cyan); letter-spacing: 1px; text-shadow: 0 0 20px rgba(0,212,255,0.6); }
 
-/* ── name screen ── */
+/* name screen */
 .player-name-row { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
 .name-field { display: flex; flex-direction: column; gap: 6px; align-items: center; }
 .name-field label { font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
@@ -305,7 +304,7 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
 }
 .name-field input:focus { border-color: var(--accent); outline: none; }
 
-/* ── hit/miss animations ── */
+/* hit/miss animations */
 @keyframes screen-shake {
     0%   { transform: translate(0, 0); }
     15%  { transform: translate(-6px, 3px); }
@@ -341,7 +340,7 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
 .cell.anim-miss { animation: cell-splash  0.4s ease; }
 .result-pop { animation: result-pop 0.35s ease forwards; }
 
-/* ── avatar selection ── */
+/* avatar selection */
 .avatar-row {
     display: flex;
     gap: 16px;
@@ -393,14 +392,14 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
 /* battle title with avatar */
 #battle-title { display: flex; align-items: center; justify-content: center; gap: 8px; }
 
-/* ── per-ship colours ── */
+/* per-ship colours */
 .cell.ship-tie-fighter      { background: rgba(0, 207, 255, 0.45); border-color: rgba(0, 207, 255, 0.9); }
 .cell.ship-jedi-starfighter { background: rgba(255, 20, 180, 0.45); border-color: rgba(255, 20, 180, 0.9); }
 .cell.ship-slave-i          { background: rgba(68,  255, 136, 0.45); border-color: rgba(68,  255, 136, 0.9); }
 .cell.ship-x-wing           { background: rgba(255, 170, 0,   0.45); border-color: rgba(255, 170, 0,   0.9); }
 .cell.ship-millennium-falcon { background: rgba(200, 68,  255, 0.45); border-color: rgba(200, 68,  255, 0.9); }
 
-/* hits on coloured ships */
+/* hits on ships */
 .cell.ship-tie-fighter.hit,
 .cell.ship-jedi-starfighter.hit,
 .cell.ship-slave-i.hit,
@@ -413,7 +412,7 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
 .cell.ship-x-wing.sunk,
 .cell.ship-millennium-falcon.sunk { background: rgba(100, 0, 0, 0.85); border-color: #880000; }
 
-/* ── win screen ── */
+/* win screen */
 @keyframes victory-glow {
     0%, 100% { text-shadow: 0 0 20px #FFE81A, 0 0 40px #FFE81A; }
     50%       { text-shadow: 0 0 60px #FFE81A, 0 0 120px #FFE81A, 0 0 200px #FFE81A; }
@@ -455,7 +454,7 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
     margin-top: 16px;
 }
 
-/* ── ship entry coloured borders matching grid colours ── */
+/* ship entry coloured borders matching grid colours */
 .ship-entry[data-ship="TIE Fighter"]       { border-color: rgba(0, 207, 255, 0.7); }
 .ship-entry[data-ship="Jedi Starfighter"]  { border-color: rgba(255, 20, 180, 0.7); }
 .ship-entry[data-ship="Slave I"]           { border-color: rgba(68,  255, 136, 0.7); }
@@ -473,7 +472,7 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
 .ship-entry[data-ship="Millennium Falcon"]:hover,
 .ship-entry[data-ship="Millennium Falcon"].active-ship { border-color: #cc44ff; box-shadow: 0 0 10px rgba(200,68,255,0.4); }
 
-/* ── avatar images ── */
+/* avatar images */
 .avatar-option {
     padding: 2px;
     overflow: hidden;
@@ -500,7 +499,7 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
     margin: 8px auto;
     display: block;
 }
-/* Make avatar grid wider for 20 avatars */
+/* Avatar grid for 20 avatars */
 .avatar-row {
     display: grid !important;
     grid-template-columns: repeat(5, 64px);
@@ -513,12 +512,12 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
     height: 64px !important;
 }
 
-/* ── name screen player separation ── */
+/* name screen player separation */
 .player-name-row {
     gap: 80px !important;
 }
 
-/* ── placement layout fixes ── */
+/* placement layout fixes */
 .placement-sidebar-and-grid {
     align-items: flex-start;
 }
@@ -534,12 +533,12 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
     align-items: flex-start;
 }
 
-/* ── fire button no emoji ── */
+/* fire button */
 #btn-fire {
     letter-spacing: 2px;
 }
 
-/* ── placement screen restructure ── */
+/* placement screen */
 .placement-left {
     display: flex;
     flex-direction: column;
@@ -555,7 +554,7 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
     --cell-size: 48px;
 }
 
-/* ── placement final layout ── */
+/* placement layout */
 .placement-right {
     display: flex;
     flex-direction: column;
@@ -581,7 +580,7 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
     padding-bottom: 4px;
 }
 
-/* ── preview cell highlight - clean solid border ── */
+/* preview cell highlight */
 .cell.preview {
     background: rgba(0,180,255,0.25) !important;
     outline: 2px solid #00d4ff !important;
@@ -593,7 +592,7 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
     z-index: 3;
 }
 
-/* ── placement top bar - don't stretch status bar ── */
+/* placement top bar */
 .placement-top-bar {
     justify-content: flex-start !important;
     flex-wrap: nowrap !important;
@@ -604,7 +603,7 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
     width: auto !important;
 }
 
-/* ── logo menu ── */
+/* logo menu */
 #logo-btn {
     cursor: pointer;
     position: relative;
@@ -636,7 +635,7 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
 }
 .logo-menu button:last-child { border-bottom: none; }
 
-/* ── align status bar left edge with grid ── */
+/* align status bar left edge with grid */
 .placement-top-bar .status-bar {
     flex: 1 1 auto !important;
     width: auto !important;
