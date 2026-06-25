@@ -592,3 +592,46 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
     outline: 2px solid #cc2200 !important;
     z-index: 3;
 }
+
+/* ── placement top bar - don't stretch status bar ── */
+.placement-top-bar {
+    justify-content: flex-start !important;
+    flex-wrap: nowrap !important;
+}
+.placement-top-bar .status-bar {
+    flex: 0 0 auto !important;
+    min-width: 0 !important;
+    width: auto !important;
+}
+
+/* ── logo menu ── */
+#logo-btn {
+    cursor: pointer;
+    position: relative;
+}
+#logo-btn:focus { outline: 2px solid var(--accent); }
+
+.logo-menu {
+    position: absolute;
+    top: 90px;
+    left: 12px;
+    background: rgba(0,0,0,0.95);
+    border: 1px solid var(--accent);
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    z-index: 100;
+    min-width: 160px;
+    box-shadow: 0 0 20px rgba(255,232,26,0.3);
+}
+.logo-menu[hidden] { display: none; }
+.logo-menu button {
+    border: none;
+    border-bottom: 1px solid var(--border);
+    padding: 12px 20px;
+    text-align: left;
+    letter-spacing: 1px;
+    font-size: 0.8rem;
+    width: 100%;
+}
+.logo-menu button:last-child { border-bottom: none; }
