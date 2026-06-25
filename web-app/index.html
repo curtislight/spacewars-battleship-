@@ -37,33 +37,32 @@
     <section class="screen" id="placement-screen" aria-label="Ship placement">
         <h2 id="placement-title">Place Your Fleet</h2>
         <div class="placement-layout">
-            <div class="placement-sidebar-and-grid">
-                <div class="fleet-sidebar" id="placement-fleet-sidebar">
-                    <h3>Your Ships</h3>
-                    <ul id="ship-list" style="list-style:none;display:flex;flex-direction:column;gap:6px" aria-label="Ships to place"></ul>
+
+            <!-- Left: status + controls + ship list -->
+            <div class="placement-left">
+                <div class="status-bar" id="placement-status">Select a ship from the list.</div>
+                <div class="orientation-label" id="orientation-label" aria-live="polite">Orientation: Horizontal →</div>
+                <div class="btn-row placement-btns">
+                    <button id="btn-rotate" aria-label="Rotate ship">↻</button>
+                    <button id="btn-randomise">Randomise</button>
+                    <button id="btn-ready" disabled>Ready</button>
                 </div>
-                <div class="placement-grid-col">
-                    <div class="placement-controls">
-                        <div class="status-bar" id="placement-status">Select a ship from the list.</div>
-                        <div class="orientation-label" id="orientation-label" aria-live="polite">Orientation: Horizontal →</div>
-                        <div class="btn-row">
-                            <button id="btn-rotate" aria-label="Rotate ship">↻</button>
-                            <button id="btn-randomise">Randomise</button>
-                            <button id="btn-ready" disabled>Ready</button>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="grid-title" id="placement-grid-label">Your Board</div>
-                        <div class="grid-outer">
-                            <div class="col-labels" id="placement-col-labels"></div>
-                            <div class="row-labels-and-grid">
-                                <div class="row-labels" id="placement-row-labels"></div>
-                                <div class="grid" id="placement-grid" role="grid" aria-label="Placement grid"></div>
-                            </div>
-                        </div>
+                <h3 style="color:var(--accent);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;margin-top:4px">Your Ships</h3>
+                <ul id="ship-list" style="list-style:none;display:flex;flex-direction:column;gap:6px" aria-label="Ships to place"></ul>
+            </div>
+
+            <!-- Right: grid -->
+            <div>
+                <div class="grid-title" id="placement-grid-label">Your Board</div>
+                <div class="grid-outer">
+                    <div class="col-labels" id="placement-col-labels"></div>
+                    <div class="row-labels-and-grid">
+                        <div class="row-labels" id="placement-row-labels"></div>
+                        <div class="grid" id="placement-grid" role="grid" aria-label="Placement grid"></div>
                     </div>
                 </div>
             </div>
+
         </div>
     </section>
 
