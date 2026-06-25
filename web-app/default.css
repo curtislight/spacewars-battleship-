@@ -640,3 +640,15 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
     flex: 1 1 auto !important;
     width: auto !important;
 }
+
+.ship-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.battle-btn-row {
+    margin-top: 10px;
+    gap: 8px;
+}
