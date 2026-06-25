@@ -382,7 +382,9 @@ const refresh_ship_list = function (list_el, for_placement, battle_board) {
         top.className = "ship-entry-top";
 
         const img = document.createElement("img");
-        img.className = "ship-img";
+        img.className = "ship-img" + (
+            ship_def.name === "Slave I" ? " ship-slave-i" : ""
+        );
         img.src = SHIP_IMAGES[ship_def.name] || "";
         img.alt = ship_def.name;
 
@@ -575,13 +577,19 @@ el("btn-randomise").addEventListener("click", function () {
 el("btn-ready").addEventListener("click", function () {
     boards[placement_player] = placement_board;
     if (placement_player === 0) {
-        el("pass-title").textContent   = "Hand Over the Device";
-        el("pass-message").textContent = `${player_names[0]} is done. Cover the screen and pass to ${player_names[1]}.`;
+        el("pass-title").textContent = "Hand Over the Device";
+        el("pass-avatar-img").src = Avatars[player_avatars[1]] || "";
+        el("pass-avatar-img").alt = player_names[1];
+        el("pass-player-display").textContent = player_names[1];
+        el("pass-message").textContent = "Cover the screen, then pass to:";
         show_screen("pass-screen");
         el("btn-pass").onclick = function () { placement_player = 1; start_placement(); };
     } else {
-        el("pass-title").textContent   = "Ready for Battle!";
-        el("pass-message").textContent = `Both fleets placed. Pass to ${player_names[0]} to fire first.`;
+        el("pass-title").textContent = "Ready for Battle!";
+        el("pass-avatar-img").src = Avatars[player_avatars[0]] || "";
+        el("pass-avatar-img").alt = player_names[0];
+        el("pass-player-display").textContent = player_names[0];
+        el("pass-message").textContent = "Both fleets placed. Pass to:";
         show_screen("pass-screen");
         active_player = 0;
         el("btn-pass").onclick = function () { start_battle(); };
