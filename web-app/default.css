@@ -191,6 +191,7 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
 
 .ship-entry-top { display: flex; align-items: center; gap: 8px; }
 .ship-img       { width: 80px; height: 50px; object-fit: contain; flex-shrink: 0; }
+.ship-img.ship-slave-i { width: 100px; height: 70px; }
 .ship-name      { font-size: 0.72rem; color: var(--text); }
 .ship-entry.active-ship .ship-name { color: var(--accent); }
 .ship-entry.sunk-ship   .ship-name { text-decoration: line-through; color: var(--text-dim); }
@@ -262,7 +263,34 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
 .log-entry.log-miss { color: var(--cyan); }
 
 /* ── pass / result screens ── */
-#pass-screen   { text-align: center; gap: 28px; }
+#pass-screen {
+    text-align: center;
+    gap: 24px;
+    justify-content: center;
+    min-height: calc(100vh - 90px);
+    padding-top: 0;
+}
+.pass-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--accent);
+    box-shadow: 0 0 30px rgba(255,232,26,0.4);
+}
+.pass-player-name {
+    font-size: 1.6rem;
+    color: var(--accent);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-shadow: 0 0 20px rgba(255,232,26,0.5);
+}
+.pass-instruction {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    max-width: 360px;
+    line-height: 1.6;
+}
 #result-screen { text-align: center; gap: 24px; }
 #result-winner { font-size: 1.3rem; color: var(--cyan); letter-spacing: 1px; text-shadow: 0 0 20px rgba(0,212,255,0.6); }
 
@@ -475,5 +503,39 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
 }
 /* Make avatar grid wider for 20 avatars */
 .avatar-row {
-    max-width: 360px;
+    display: grid !important;
+    grid-template-columns: repeat(4, 64px);
+    gap: 8px;
+    max-width: none;
+    margin-top: 6px;
+}
+.avatar-option {
+    width: 64px !important;
+    height: 64px !important;
+}
+
+/* ── name screen player separation ── */
+.player-name-row {
+    gap: 80px !important;
+}
+
+/* ── placement layout fixes ── */
+.placement-sidebar-and-grid {
+    align-items: flex-start;
+}
+#placement-fleet-sidebar {
+    width: 260px;
+}
+.placement-grid-col {
+    align-items: flex-start;
+}
+/* Controls above the grid */
+.placement-controls {
+    width: 100%;
+    align-items: flex-start;
+}
+
+/* ── fire button no emoji ── */
+#btn-fire {
+    letter-spacing: 2px;
 }
