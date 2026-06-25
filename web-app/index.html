@@ -51,7 +51,7 @@
                     <button id="btn-randomise">Randomise</button>
                 </div>
                 <h3 class="ships-heading">Your Ships</h3>
-                <ul id="ship-list" style="list-style:none;display:flex;flex-direction:column;gap:6px" aria-label="Ships to place"></ul>
+                <ul id="ship-list" class="ship-list" aria-label="Ships to place"></ul>
             </div>
 
             <!-- Right: status + ready above grid -->
@@ -90,7 +90,7 @@
 
             <div class="fleet-sidebar">
                 <h3 id="enemy-fleet-label">Enemy Fleet</h3>
-                <ul id="enemy-fleet-list" style="list-style:none;display:flex;flex-direction:column;gap:6px" aria-label="Your fleet health status"></ul>
+                <ul id="enemy-fleet-list" class="ship-list" aria-label="Your fleet health status"></ul>
             </div>
 
             <div>
@@ -102,7 +102,7 @@
                         <div class="grid" id="enemy-grid" role="grid" aria-label="Enemy grid, click to select then confirm"></div>
                     </div>
                 </div>
-                <div class="btn-row" style="margin-top:10px;gap:8px">
+                <div class="btn-row battle-btn-row">
                     <button id="btn-fire" style="display:none" aria-label="Confirm fire">FIRE</button>
                     <button id="btn-continue-turn" style="display:none" aria-label="Continue to next turn">Continue</button>
                 </div>
