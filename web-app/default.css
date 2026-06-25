@@ -159,8 +159,7 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
 .cell.preview         { background: rgba(0,180,255,0.15); }
 .cell.preview-invalid { background: rgba(200,0,0,0.15); }
 
-/* miss dot */
-.cell.miss::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--cyan); opacity: 0.9; box-shadow: 0 0 6px var(--cyan); }
+/* miss dot removed */
 
 /* ── ship image spanning footprint on own grid ── */
 /* ship-span-img removed - using coloured cells instead */
@@ -554,4 +553,30 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
 /* bigger grid - more cells visible */
 :root {
     --cell-size: 48px;
+}
+
+/* ── placement final layout ── */
+.placement-right {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.placement-top-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.placement-top-bar .status-bar {
+    flex: 1;
+    min-width: 200px;
+}
+.ships-heading {
+    color: var(--accent);
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 4px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 4px;
 }
