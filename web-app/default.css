@@ -395,7 +395,7 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
 
 /* ── per-ship colours ── */
 .cell.ship-tie-fighter      { background: rgba(0, 207, 255, 0.45); border-color: rgba(0, 207, 255, 0.9); }
-.cell.ship-jedi-starfighter { background: rgba(255, 68,  68,  0.45); border-color: rgba(255, 68,  68,  0.9); }
+.cell.ship-jedi-starfighter { background: rgba(255, 20, 180, 0.45); border-color: rgba(255, 20, 180, 0.9); }
 .cell.ship-slave-i          { background: rgba(68,  255, 136, 0.45); border-color: rgba(68,  255, 136, 0.9); }
 .cell.ship-x-wing           { background: rgba(255, 170, 0,   0.45); border-color: rgba(255, 170, 0,   0.9); }
 .cell.ship-millennium-falcon { background: rgba(200, 68,  255, 0.45); border-color: rgba(200, 68,  255, 0.9); }
@@ -457,7 +457,7 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
 
 /* ── ship entry coloured borders matching grid colours ── */
 .ship-entry[data-ship="TIE Fighter"]       { border-color: rgba(0, 207, 255, 0.7); }
-.ship-entry[data-ship="Jedi Starfighter"]  { border-color: rgba(255, 68,  68,  0.7); }
+.ship-entry[data-ship="Jedi Starfighter"]  { border-color: rgba(255, 20, 180, 0.7); }
 .ship-entry[data-ship="Slave I"]           { border-color: rgba(68,  255, 136, 0.7); }
 .ship-entry[data-ship="X-wing"]            { border-color: rgba(255, 170, 0,   0.7); }
 .ship-entry[data-ship="Millennium Falcon"] { border-color: rgba(200, 68,  255, 0.7); }
@@ -465,7 +465,7 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
 .ship-entry[data-ship="TIE Fighter"]:hover,
 .ship-entry[data-ship="TIE Fighter"].active-ship       { border-color: #00cfff; box-shadow: 0 0 10px rgba(0,207,255,0.4); }
 .ship-entry[data-ship="Jedi Starfighter"]:hover,
-.ship-entry[data-ship="Jedi Starfighter"].active-ship  { border-color: #ff4444; box-shadow: 0 0 10px rgba(255,68,68,0.4); }
+.ship-entry[data-ship="Jedi Starfighter"].active-ship  { border-color: #ff14b4; box-shadow: 0 0 10px rgba(255,20,180,0.4); }
 .ship-entry[data-ship="Slave I"]:hover,
 .ship-entry[data-ship="Slave I"].active-ship           { border-color: #44ff88; box-shadow: 0 0 10px rgba(68,255,136,0.4); }
 .ship-entry[data-ship="X-wing"]:hover,
