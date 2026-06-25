@@ -52,18 +52,6 @@ const throw_if_invalid = function (board) {
     });
 };
 
-const place_all = function (placements) {
-    return placements.reduce(function (board, p) {
-        const result = Battleship.place_ship(
-            p.name, p.shape, p.size, p.cells, board
-        );
-        if (result === undefined) {
-            throw new Error("Failed to place " + p.name + " in test setup.");
-        }
-        return result;
-    }, Battleship.empty_board());
-};
-
 // At the start of the game
 
 describe("At the start of the game", function () {
