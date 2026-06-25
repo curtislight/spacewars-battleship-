@@ -500,11 +500,11 @@ const paint_own_grid = function () {
 const refresh_battle = function (locked) {
     paint_enemy_grid(locked);
     paint_own_grid();
-    refresh_ship_list(el("enemy-fleet-list"), false, boards[1 - active_player]);
+    refresh_ship_list(el("enemy-fleet-list"), false, boards[active_player]);
     el("battle-title").innerHTML = `<span class="player-avatar">${player_avatars[active_player]}</span>${player_names[active_player]}'s Turn`;
     el("enemy-grid-title").textContent  = `${player_names[1 - active_player]}'s Waters`;
     el("own-grid-title").textContent    = `${player_names[active_player]}'s Waters`;
-    el("enemy-fleet-label").textContent = `${player_names[1 - active_player]}'s Fleet`;
+    el("enemy-fleet-label").textContent = `${player_names[active_player]}'s Fleet`;
 };
 
 // ── events ────────────────────────────────────────────────────────────────────
@@ -557,7 +557,12 @@ el("btn-ready").addEventListener("click", function () {
 
 el("btn-continue-turn").addEventListener("click", function () {
     if (Battleship.is_defeated(boards[1 - active_player])) {
-        el("result-winner").textContent = `${player_names[active_player]} wins! The galaxy is saved. 🏆`;
+        el("result-winner").innerHTML = (
+            "<span class=\"result-trophy\">🏆</span>" +
+            player_avatars[active_player] + " " +
+            player_names[active_player].toUpperCase() +
+            " WINS!<br><small style=\"font-size:0.6em;color:#aaa\">The galaxy is saved.</small>"
+        );
         show_screen("result-screen");
         return;
     }
@@ -600,21 +605,34 @@ el("btn-fire").addEventListener("click", function () {
     if (sunk) {
         shake_screen();
         el("shot-result").style.color   = "#cc2200";
-        el("shot-result").textContent   = ship.name + " DESTROYED";
+        el("shot-result").textContent   = ship.name + " DESTROYED – Fire again!";
         add_log(player_names[active_player] + " → " + pos + ": " + ship.name + " DESTROYED", "sunk");
     } else if (hit) {
         shake_screen();
         el("shot-result").style.color   = "#FFE81A";
-        el("shot-result").textContent   = "HIT";
+        el("shot-result").textContent   = "HIT – Fire again!";
         add_log(player_names[active_player] + " → " + pos + ": HIT", "hit");
     } else {
         el("shot-result").style.color   = "#00d4ff";
-        el("shot-result").textContent   = "MISS";
+        el("shot-result").textContent   = "MISS – Pass the device.";
         add_log(player_names[active_player] + " → " + pos + ": miss", "miss");
     }
 
-    waiting = true;
-    refresh_battle(true);
+    if (Battleship.is_defeated(boards[defender])) {
+        // Win immediately shown via continue button
+        refresh_battle(true);
+        el("btn-continue-turn").style.display = "inline-block";
+        waiting = true;
+    } else if (hit) {
+        // Hit: let them fire again, no waiting
+        refresh_battle(false);
+        waiting = false;
+    } else {
+        // Miss: lock grid, show continue
+        waiting = true;
+        refresh_battle(true);
+        el("btn-continue-turn").style.display = "inline-block";
+    }
 
     const fired = get_cell(el("enemy-grid"), row, col);
     if (fired) {
@@ -622,7 +640,6 @@ el("btn-fire").addEventListener("click", function () {
         animate_cell(fired, hit ? "hit" : "miss");
     }
     pop_result();
-    el("btn-continue-turn").style.display = "inline-block";
 });
 
 el("btn-play-again").addEventListener("click", function () {
