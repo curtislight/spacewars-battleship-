@@ -348,6 +348,7 @@ const refresh_ship_list = function (list_el, for_placement, battle_board) {
         const entry = document.createElement("div");
         entry.className = "ship-entry";
         entry.setAttribute("tabindex", "0");
+        entry.setAttribute("data-ship", ship_def.name);
 
         const top = document.createElement("div");
         top.className = "ship-entry-top";
