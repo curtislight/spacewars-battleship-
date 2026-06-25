@@ -3,7 +3,7 @@ import Avatars from "./avatars.js";
 import Battleship from "./Battleship.js";
 import Images from "./images.js";
 
-// ── constants
+// constants
 const ROW_LABELS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
 const COL_LABELS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
 
@@ -70,7 +70,7 @@ const FOOTPRINT = {
     }
 };
 
-// ── state
+// state
 let active_player = 0;
 let boards = [Battleship.empty_board(), Battleship.empty_board()];
 let confirm_coord = null;
@@ -85,7 +85,7 @@ let selected_idx = null;
 let waiting = false;
 let xwing_rotation = 0;
 
-// ── helpers
+// helpers
 const el = function (id) {
     return document.getElementById(id);
 };
@@ -113,7 +113,7 @@ const avatar_src = function (key) {
     return Avatars[key] || "";
 };
 
-// ── avatar selection
+// avatar selection
 const build_avatar_row = function (row_el, player_idx) {
     row_el.innerHTML = "";
     AVATARS.forEach(function (avatar) {
@@ -145,7 +145,7 @@ const build_avatar_row = function (row_el, player_idx) {
     });
 };
 
-// ── event log
+// event log
 const add_log = function (text, type) {
     log_entries.push({"text": text, "type": type});
     const entry = document.createElement("div");
@@ -161,7 +161,7 @@ const clear_log = function () {
     el("log-entries").innerHTML = "";
 };
 
-// ── animations
+// animations
 const shake_screen = function () {
     const m = document.querySelector("main");
     m.classList.remove("shake");
@@ -193,7 +193,7 @@ const pop_result = function () {
     r.classList.add("result-pop");
 };
 
-// ── grid builders
+// grid builders
 const build_labels = function (col_el, row_el) {
     col_el.innerHTML = "";
     row_el.innerHTML = "";
@@ -267,7 +267,7 @@ const get_cell = function (grid_el, row, col) {
     );
 };
 
-// ── footprint
+// footprint
 const make_footprint = function (ship_def, placed_ship, board) {
     const fp = FOOTPRINT[ship_def.name];
     const filled = new Set(fp.offsets.map(function (o) {
@@ -314,7 +314,7 @@ const make_footprint = function (ship_def, placed_ship, board) {
     return wrap;
 };
 
-// ── preview highlight
+// preview highlight
 const draw_preview = function (grid_el, cells, valid) {
     grid_el.querySelectorAll(".preview-outline").forEach(function (n) {
         n.remove();
@@ -338,7 +338,7 @@ const draw_preview = function (grid_el, cells, valid) {
     });
 };
 
-// ── placement
+// placement
 const compute_cells = function (row, col) {
     const remaining = unplaced();
     if (selected_idx === null || !remaining[selected_idx]) {
@@ -513,7 +513,7 @@ const on_placement_click = function (row, col) {
     refresh_placement();
 };
 
-// ── battle grid
+// battle grid
 const find_ship_at = function (row, col, board) {
     return board.fleet.find(function (s) {
         return s.cells.some(function (c) {
@@ -621,7 +621,7 @@ const refresh_battle = function (locked) {
     );
 };
 
-// ── pass screen helper
+// pass screen helper
 const set_pass_screen = function (title, message, avatar_key, name) {
     el("pass-title").textContent = title;
     el("pass-message").textContent = message;
@@ -631,7 +631,7 @@ const set_pass_screen = function (title, message, avatar_key, name) {
     show_screen("pass-screen");
 };
 
-// ── screen starters
+// screen starters
 const start_placement = function () {
     placement_board = Battleship.empty_board();
     falcon_rotation = 0;
@@ -699,7 +699,7 @@ const start_battle = function () {
     show_screen("battle-screen");
 };
 
-// ── logo menu
+// logo menu
 const logo_menu = el("logo-menu");
 
 const toggle_menu = function () {
@@ -732,7 +732,7 @@ el("menu-restart").addEventListener("click", function () {
     show_screen("name-screen");
 });
 
-// ── events
+// events
 el("logo").src = Images.logo;
 build_avatar_row(el("avatar-row-p1"), 0);
 build_avatar_row(el("avatar-row-p2"), 1);
