@@ -824,7 +824,7 @@ el("btn-fire").addEventListener("click", function () {
         shake_screen();
         el("shot-result").style.color = "#cc2200";
         el("shot-result").textContent = (
-            ship.name + " DESTROYED 2013 Fire again!"
+            ship.name + " DESTROYED \u2013 Fire again!"
         );
         add_log(
             attacker + " → " + pos + ": " + ship.name + " DESTROYED",
