@@ -445,3 +445,35 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
 .ship-entry[data-ship="X-wing"].active-ship            { border-color: #ffaa00; box-shadow: 0 0 10px rgba(255,170,0,0.4); }
 .ship-entry[data-ship="Millennium Falcon"]:hover,
 .ship-entry[data-ship="Millennium Falcon"].active-ship { border-color: #cc44ff; box-shadow: 0 0 10px rgba(200,68,255,0.4); }
+
+/* ── avatar images ── */
+.avatar-option {
+    padding: 2px;
+    overflow: hidden;
+}
+.avatar-option img {
+    border-radius: 50%;
+    display: block;
+}
+.battle-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+    vertical-align: middle;
+    border: 2px solid var(--accent);
+}
+.win-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--accent);
+    margin: 8px auto;
+    display: block;
+}
+/* Make avatar grid wider for 20 avatars */
+.avatar-row {
+    max-width: 360px;
+}
