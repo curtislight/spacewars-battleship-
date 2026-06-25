@@ -271,8 +271,8 @@ const random_int = function (max) {
  * @function
  * @returns {Battleship.Board} A fully placed board.
  */
- Battleship.random_board = function () {
-        return Battleship.ships.reduce(function (board, ship) {
+Battleship.random_board = function () {
+    return Battleship.ships.reduce(function (board, ship) {
         let placed;
         while (placed === undefined) {
             const row = random_int(Battleship.GRID_SIZE);
