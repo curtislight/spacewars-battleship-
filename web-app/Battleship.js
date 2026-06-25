@@ -271,7 +271,7 @@ const random_int = function (max) {
  */
 Battleship.random_board = function () {
     return Battleship.ships.reduce(function (board, ship) {
-        let placed = undefined;
+        let placed;
         while (placed === undefined) {
             const row = random_int(Battleship.GRID_SIZE);
             const col = random_int(Battleship.GRID_SIZE);
