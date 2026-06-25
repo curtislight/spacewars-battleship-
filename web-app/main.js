@@ -1,6 +1,7 @@
 /*jslint browser */
 import Battleship from "./Battleship.js";
 import Images from "./images.js";
+import Avatars from "./avatars.js";
 
 // ── constants ────────────────────────────────────────────────────────────────
 const ROW_LABELS = ["A","B","C","D","E","F","G","H","I","J"];
@@ -29,7 +30,28 @@ const ship_css_class = function (name) {
 };
 
 // Avatar options for player selection
-const AVATARS = ["🤖", "👽", "🧑‍🚀", "🦾", "👾", "🛸", "⚡", "🌌"];
+const AVATARS = [
+    {"key": "luke",             "label": "Luke Skywalker"},
+    {"key": "vader",            "label": "Darth Vader"},
+    {"key": "yoda",             "label": "Yoda"},
+    {"key": "obi_wan",          "label": "Obi-Wan Kenobi"},
+    {"key": "darth_maul",       "label": "Darth Maul"},
+    {"key": "leia",             "label": "Princess Leia"},
+    {"key": "chewbacca",        "label": "Chewbacca"},
+    {"key": "r2d2",             "label": "R2-D2"},
+    {"key": "c3po",             "label": "C-3PO"},
+    {"key": "mace_windu",       "label": "Mace Windu"},
+    {"key": "boba_fett",        "label": "Boba Fett"},
+    {"key": "stormtrooper",     "label": "Stormtrooper"},
+    {"key": "general_grievous", "label": "General Grievous"},
+    {"key": "lando",            "label": "Lando Calrissian"},
+    {"key": "greedo",           "label": "Greedo"},
+    {"key": "jar_jar",          "label": "Jar Jar Binks"},
+    {"key": "emperor",          "label": "Emperor Palpatine"},
+    {"key": "kit_fisto",        "label": "Kit Fisto"},
+    {"key": "watto",            "label": "Watto"},
+    {"key": "battle_droid",     "label": "Battle Droid"}
+];
 
 // Rotation angle (degrees) to apply to ship image on own grid
 // line ships: 0 = horizontal, 90 = vertical
@@ -68,7 +90,7 @@ const FOOTPRINT = {
 
 // ── state ────────────────────────────────────────────────────────────────────
 let player_names     = ["Player 1", "Player 2"];
-let player_avatars   = ["🤖", "👽"];
+let player_avatars   = ["luke", "vader"];
 let boards           = [Battleship.empty_board(), Battleship.empty_board()];
 let placement_player = 0;
 let placement_board  = Battleship.empty_board();
@@ -95,16 +117,22 @@ const show_screen = function (id) {
 // ── avatar selection ──────────────────────────────────────────────────────────
 const build_avatar_row = function (row_el, player_idx) {
     row_el.innerHTML = "";
-    AVATARS.forEach(function (emoji, i) {
+    AVATARS.forEach(function (avatar) {
         const btn = document.createElement("button");
         btn.className = "avatar-option" + (
-            player_avatars[player_idx] === emoji ? " selected" : ""
+            player_avatars[player_idx] === avatar.key ? " selected" : ""
         );
-        btn.textContent = emoji;
-        btn.setAttribute("aria-label", "Avatar " + emoji);
-        btn.setAttribute("aria-pressed", player_avatars[player_idx] === emoji ? "true" : "false");
+        btn.setAttribute("aria-label", avatar.label);
+        btn.setAttribute("aria-pressed", player_avatars[player_idx] === avatar.key ? "true" : "false");
+        const img = document.createElement("img");
+        img.src = Avatars[avatar.key] || "";
+        img.alt = avatar.label;
+        img.style.width = "100%";
+        img.style.height = "100%";
+        img.style.objectFit = "contain";
+        btn.appendChild(img);
         btn.addEventListener("click", function () {
-            player_avatars[player_idx] = emoji;
+            player_avatars[player_idx] = avatar.key;
             build_avatar_row(row_el, player_idx);
         });
         row_el.appendChild(btn);
@@ -502,7 +530,11 @@ const refresh_battle = function (locked) {
     paint_enemy_grid(locked);
     paint_own_grid();
     refresh_ship_list(el("enemy-fleet-list"), false, boards[active_player]);
-    el("battle-title").innerHTML = `<span class="player-avatar">${player_avatars[active_player]}</span>${player_names[active_player]}'s Turn`;
+    el("battle-title").innerHTML = (
+        "<img src=\"" + (Avatars[player_avatars[active_player]] || "") +
+        "\" alt=\"avatar\" class=\"battle-avatar\">" +
+        player_names[active_player] + "'s Turn"
+    );
     el("enemy-grid-title").textContent  = `${player_names[1 - active_player]}'s Waters`;
     el("own-grid-title").textContent    = `${player_names[active_player]}'s Waters`;
     el("enemy-fleet-label").textContent = `${player_names[active_player]}'s Fleet`;
@@ -560,8 +592,9 @@ el("btn-continue-turn").addEventListener("click", function () {
     if (Battleship.is_defeated(boards[1 - active_player])) {
         el("result-winner").innerHTML = (
             "<span class=\"result-trophy\">🏆</span>" +
-            player_avatars[active_player] + " " +
-            player_names[active_player].toUpperCase() +
+            "<img src=\"" + (Avatars[player_avatars[active_player]] || "") +
+            "\" alt=\"avatar\" class=\"win-avatar\">" +
+            "<br>" + player_names[active_player].toUpperCase() +
             " WINS!<br><small style=\"font-size:0.6em;color:#aaa\">The galaxy is saved.</small>"
         );
         show_screen("result-screen");
