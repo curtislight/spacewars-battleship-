@@ -518,6 +518,46 @@ const refresh_battle = function (locked) {
 
 // ── events ────────────────────────────────────────────────────────────────────
 el("logo").src = Images.logo;
+
+// ── logo menu ────────────────────────────────────────────────────────────────
+const logo_menu = el("logo-menu");
+
+const toggle_menu = function () {
+    if (logo_menu.hidden) {
+        logo_menu.hidden = false;
+    } else {
+        logo_menu.hidden = true;
+    }
+};
+
+el("logo-btn").addEventListener("click", toggle_menu);
+el("logo-btn").addEventListener("keydown", function (ev) {
+    if (ev.key === "Enter" || ev.key === " ") { toggle_menu(); }
+});
+
+// Close menu when clicking outside
+document.addEventListener("click", function (ev) {
+    if (!el("logo-btn").contains(ev.target)) {
+        logo_menu.hidden = true;
+    }
+});
+
+el("menu-resume").addEventListener("click", function () {
+    logo_menu.hidden = true;
+    // Resume = just close the menu, game state unchanged
+});
+
+el("menu-restart").addEventListener("click", function () {
+    logo_menu.hidden = true;
+    boards = [Battleship.empty_board(), Battleship.empty_board()];
+    player_names = ["Player 1", "Player 2"];
+    player_avatars = ["luke", "vader"];
+    build_avatar_row(el("avatar-row-p1"), 0);
+    build_avatar_row(el("avatar-row-p2"), 1);
+    el("name-p1").value = "Player 1";
+    el("name-p2").value = "Player 2";
+    show_screen("name-screen");
+});
 build_avatar_row(el("avatar-row-p1"), 0);
 build_avatar_row(el("avatar-row-p2"), 1);
 
