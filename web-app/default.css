@@ -635,3 +635,9 @@ button:disabled:hover { background: rgba(0,0,0,0.6); color: var(--text-dim); box
     width: 100%;
 }
 .logo-menu button:last-child { border-bottom: none; }
+
+/* ── align status bar left edge with grid ── */
+.placement-top-bar .status-bar {
+    flex: 1 1 auto !important;
+    width: auto !important;
+}
