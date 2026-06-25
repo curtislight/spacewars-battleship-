@@ -60,5 +60,5 @@ Ship and avatar images are embedded as base64 data URIs in `images.js` and `avat
 
 Ship images: Lego Star Wars fan builds (personal use).
 Avatar images: Lego Star Wars character icons (personal use).
-Logo: original design.
+Logo: designed by the author using ChatGPT.
 Built with [Mocha](https://mochajs.org/) (testing) and [JSDoc](https://jsdoc.app/) + [Docdash](https://github.com/clenemt/docdash) (API documentation).
