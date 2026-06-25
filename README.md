@@ -58,7 +58,6 @@ Ship and avatar images are embedded as base64 data URIs in `images.js` and `avat
 
 ## Credits
 
-Ship images: Lego Star Wars fan builds (personal use).
-Avatar images: Lego Star Wars character icons (personal use).
-Logo: designed by the author using ChatGPT.
+Avatar icons & ship images: Lego Star Wars models (Star Wars © Lucasfilm/Disney, Lego © The Lego Group), sourced from publicly available web images and used for this non-commercial educational project only. The ship images are photographs of physical Lego builds rather than official renders or packaging artwork.
+Logo: generated with ChatGPT, directed by the author
 Built with [Mocha](https://mochajs.org/) (testing) and [JSDoc](https://jsdoc.app/) + [Docdash](https://github.com/clenemt/docdash) (API documentation).
