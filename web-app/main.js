@@ -3,7 +3,7 @@ import Avatars from "./avatars.js";
 import Battleship from "./Battleship.js";
 import Images from "./images.js";
 
-// ── constants ─────────────────────────────────────────────────────────────────
+// ── constants
 const ROW_LABELS = ["A","B","C","D","E","F","G","H","I","J"];
 const COL_LABELS = ["1","2","3","4","5","6","7","8","9","10"];
 const CELL_SIZE  = 44;
@@ -96,7 +96,7 @@ const FOOTPRINT = {
     }
 };
 
-// ── state ─────────────────────────────────────────────────────────────────────
+// ── state
 let active_player    = 0;
 let boards           = [Battleship.empty_board(), Battleship.empty_board()];
 let confirm_coord    = null;
@@ -111,7 +111,7 @@ let selected_idx     = null;
 let waiting          = false;
 let xwing_rotation   = 0;
 
-// ── helpers ───────────────────────────────────────────────────────────────────
+// ── helpers
 const el = function (id) {
     return document.getElementById(id);
 };
@@ -135,7 +135,7 @@ const avatar_src = function (key) {
     return Avatars[key] || "";
 };
 
-// ── avatar selection ──────────────────────────────────────────────────────────
+// ── avatar selection
 const build_avatar_row = function (row_el, player_idx) {
     row_el.innerHTML = "";
     AVATARS.forEach(function (avatar) {
@@ -159,7 +159,7 @@ const build_avatar_row = function (row_el, player_idx) {
     });
 };
 
-// ── event log ────────────────────────────────────────────────────────────────
+// ── event log
 const add_log = function (text, type) {
     log_entries.push({"text": text, "type": type});
     const entry = document.createElement("div");
@@ -175,7 +175,7 @@ const clear_log = function () {
     el("log-entries").innerHTML = "";
 };
 
-// ── animations ───────────────────────────────────────────────────────────────
+// ── animations
 const shake_screen = function () {
     const m = document.querySelector("main");
     m.classList.remove("shake");
@@ -203,7 +203,7 @@ const pop_result = function () {
     r.classList.add("result-pop");
 };
 
-// ── grid builders ────────────────────────────────────────────────────────────
+// ── grid builders
 const build_labels = function (col_el, row_el) {
     col_el.innerHTML = "";
     row_el.innerHTML = "";
@@ -273,7 +273,7 @@ const get_cell = function (grid_el, row, col) {
     );
 };
 
-// ── footprint sidebar widget ──────────────────────────────────────────────────
+// ── footprint
 const make_footprint = function (ship_def, placed_ship, board) {
     const fp     = FOOTPRINT[ship_def.name];
     const filled = new Set(fp.offsets.map(([r, c]) => r + "," + c));
@@ -282,8 +282,9 @@ const make_footprint = function (ship_def, placed_ship, board) {
     wrap.style.gridTemplateColumns = "repeat(" + fp.cols + ", 10px)";
     wrap.style.gridTemplateRows    = "repeat(" + fp.rows + ", 10px)";
 
-    const fp_rows = Array.from({"length": fp.rows}, function (x, r) { return r; });
-    const fp_cols = Array.from({"length": fp.cols}, function (x, c) { return c; });
+    const make_range = (n) => Array.from({"length": n}, (x, i) => i);
+    const fp_rows = make_range(fp.rows);
+    const fp_cols = make_range(fp.cols);
     fp_rows.forEach(function (r) {
         fp_cols.forEach(function (c) {
             const fc = document.createElement("div");
@@ -313,7 +314,7 @@ const make_footprint = function (ship_def, placed_ship, board) {
     return wrap;
 };
 
-// ── preview highlight ─────────────────────────────────────────────────────────
+// ── preview highlight
 const draw_preview = function (grid_el, cells, valid) {
     grid_el.querySelectorAll(".preview-outline").forEach(
         (n) => n.remove()
@@ -333,7 +334,7 @@ const draw_preview = function (grid_el, cells, valid) {
     });
 };
 
-// ── placement ─────────────────────────────────────────────────────────────────
+// ── placement
 const compute_cells = function (row, col) {
     const remaining = unplaced();
     if (selected_idx === null || !remaining[selected_idx]) {
@@ -481,7 +482,8 @@ const refresh_placement = function () {
         selected_idx = null;
     } else if (selected_idx !== null && remaining[selected_idx]) {
         el("placement-status").textContent = (
-            "Placing " + remaining[selected_idx].name + " \u2013 click the grid."
+            "Placing " + remaining[selected_idx].name +
+            " – click the grid."
         );
     } else {
         el("placement-status").textContent = "Select a ship from the list.";
@@ -495,7 +497,7 @@ const refresh_placement = function () {
     );
 };
 
-// ── battle grid painting ──────────────────────────────────────────────────────
+// ── battle grid
 const find_ship_at = function (row, col, board) {
     return board.fleet.find(
         (s) => s.cells.some((c) => c[0] === row && c[1] === col)
@@ -578,11 +580,15 @@ const refresh_battle = function (locked) {
     el("enemy-grid-title").textContent = (
         player_names[1 - active_player] + "'s Waters"
     );
-    el("own-grid-title").textContent    = player_names[active_player] + "'s Waters";
-    el("enemy-fleet-label").textContent = player_names[active_player] + "'s Fleet";
+    el("own-grid-title").textContent = (
+        player_names[active_player] + "'s Waters"
+    );
+    el("enemy-fleet-label").textContent = (
+        player_names[active_player] + "'s Fleet"
+    );
 };
 
-// ── pass screen helper ────────────────────────────────────────────────────────
+// ── pass screen helper
 const set_pass_screen = function (title, message, avatar_key, name) {
     el("pass-title").textContent          = title;
     el("pass-message").textContent        = message;
@@ -592,8 +598,8 @@ const set_pass_screen = function (title, message, avatar_key, name) {
     show_screen("pass-screen");
 };
 
-// ── screen starters (defined before event handlers) ──────────────────────────
-// ── screen starters ───────────────────────────────────────────────────────────
+// ── screen starters
+// ── screen starters───────────
 const start_placement = function () {
     placement_board = Battleship.empty_board();
     falcon_rotation = 0;
@@ -661,7 +667,7 @@ const start_battle = function () {
     show_screen("battle-screen");
 };
 
-// ── logo menu ────────────────────────────────────────────────────────────────
+// ── logo menu
 const logo_menu = el("logo-menu");
 
 const toggle_menu = function () {
@@ -694,7 +700,7 @@ el("menu-restart").addEventListener("click", function () {
     show_screen("name-screen");
 });
 
-// ── events ────────────────────────────────────────────────────────────────────
+// ── events
 el("logo").src = Images.logo;
 build_avatar_row(el("avatar-row-p1"), 0);
 build_avatar_row(el("avatar-row-p2"), 1);
@@ -817,8 +823,13 @@ el("btn-fire").addEventListener("click", function () {
     if (sunk) {
         shake_screen();
         el("shot-result").style.color = "#cc2200";
-        el("shot-result").textContent = ship.name + " DESTROYED \u2013 Fire again!";
-        add_log(attacker + " \u2192 " + pos + ": " + ship.name + " DESTROYED", "sunk");
+        el("shot-result").textContent = (
+            ship.name + " DESTROYED 2013 Fire again!"
+        );
+        add_log(
+            attacker + " → " + pos + ": " + ship.name + " DESTROYED",
+            "sunk"
+        );
     } else if (hit) {
         shake_screen();
         el("shot-result").style.color = "#FFE81A";
