@@ -1,5 +1,5 @@
 {
-    "name": "spacewars-battleship",
+    "name": "galactic-battleship",
     "type": "module",
     "version": "1.0.0",
     "description": "A Star Wars themed Battleship game for Computing 2: Applications.",
@@ -10,8 +10,10 @@
     },
     "license": "ISC",
     "devDependencies": {
+        "@jslint-org/jslint": "^2026.4.30",
         "docdash": "^2.0.2",
         "jsdoc": "^4.0.4",
+        "jslint": "^0.12.1",
         "mocha": "^11.1.0"
     }
 }
