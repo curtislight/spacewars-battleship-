@@ -1,6 +1,6 @@
 import Battleship from "../Battleship.js";
 
-// ── invariant checker
+// invariant checker
 // Checks that a board satisfies all game rules after any action.
 
 const throw_if_invalid = function (board) {
@@ -64,7 +64,7 @@ const place_all = function (placements) {
     }, Battleship.empty_board());
 };
 
-// ── At the start of the game
+// At the start of the game
 
 describe("At the start of the game", function () {
     it(
@@ -119,7 +119,7 @@ describe("At the start of the game", function () {
     );
 });
 
-// ── Placing ships
+// Placing ships
 
 describe("Placing ships", function () {
     it(
@@ -262,7 +262,7 @@ describe("Placing ships", function () {
     );
 });
 
-// ── Firing shots
+// Firing shots
 
 describe("Firing shots", function () {
     it(
@@ -350,7 +350,7 @@ describe("Firing shots", function () {
     );
 });
 
-// ── Sinking ships
+// Sinking ships
 
 describe("Sinking ships", function () {
     it(
