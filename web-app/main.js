@@ -269,43 +269,18 @@ const overlay_ship_images = function (grid_el, board) {
     void board;
 };
 
-// ── preview outline (single clean border around all preview cells) ────────────
+// ── preview outline: highlight each cell individually ────────────────────────
 const draw_preview_outline = function (grid_el, cells, valid) {
     grid_el.querySelectorAll(".preview-outline").forEach((n) => n.remove());
     grid_el.querySelectorAll(".preview,.preview-invalid").forEach((c) => {
         c.classList.remove("preview", "preview-invalid");
     });
     if (!cells || cells.length === 0) { return; }
-
-    // colour each cell
     const cls = valid ? "preview" : "preview-invalid";
     cells.forEach(function (c) {
         const t = get_cell(grid_el, c[0], c[1]);
         if (t) { t.classList.add(cls); }
     });
-
-    // draw one SVG outline around the bounding box of all preview cells
-    const rows    = cells.map((c) => c[0]);
-    const cols_   = cells.map((c) => c[1]);
-    const min_row = Math.min(...rows);
-    const min_col = Math.min(...cols_);
-    const max_row = Math.max(...rows);
-    const max_col = Math.max(...cols_);
-
-    const x = min_col * CELL_SIZE;
-    const y = min_row * CELL_SIZE;
-    const w = (max_col - min_col + 1) * CELL_SIZE;
-    const h = (max_row - min_row + 1) * CELL_SIZE;
-
-    const colour = valid ? "#00d4ff" : "#cc2200";
-    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute("class", "preview-outline");
-    svg.style.left   = x + "px";
-    svg.style.top    = y + "px";
-    svg.style.width  = w + "px";
-    svg.style.height = h + "px";
-    svg.innerHTML = `<rect x="1" y="1" width="${w-2}" height="${h-2}" fill="none" stroke="${colour}" stroke-width="2" stroke-dasharray="6,3"/>`;
-    grid_el.appendChild(svg);
 };
 
 // ── placement ─────────────────────────────────────────────────────────────────
@@ -441,12 +416,11 @@ const refresh_placement = function () {
 
     const sel = selected_idx !== null ? unplaced()[selected_idx] : null;
     if (sel && sel.shape === "xwing") {
-        el("orientation-label").textContent = `X-wing rotation: ${xwing_rotation + 1} / 4`;
+        // orientation label removed
     } else if (sel && sel.shape === "falcon") {
-        el("orientation-label").textContent = `Falcon rotation: ${falcon_rotation + 1} / 4`;
+        // orientation label removed
     } else {
-        el("orientation-label").textContent =
-            orientation === "horizontal" ? "Orientation: Horizontal →" : "Orientation: Vertical ↓";
+        // orientation label removed from UI
     }
 
     el("placement-grid-label").textContent = `${player_names[placement_player]}'s Board`;
